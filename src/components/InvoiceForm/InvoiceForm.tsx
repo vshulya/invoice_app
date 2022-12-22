@@ -66,22 +66,51 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 	const [senderName, setSenderName] = useState('');
 	const [recipientName, setRecipientName] = useState('');
 	const [invoiceItems, setInvoiceItems] = useState<{ name: number, quantity: number, price: number }[]>([{ name: 0, quantity: 0, price: 0 }]);
-	const [invoiceItemAmount, setInvoiceItemAmount] = useState(0);
+
+	const [subtotal, setSubtotal] = useState(0);
+	const [discount, setDiscount] = useState<number>(0);
+	const [tax, setTax] = useState<number>(0);
+	const [shipping, setShipping] = useState<number>(0);
 	const [total, setTotal] = useState(0);
+
+	const [currency, setCurrency] = useState('$');
+
 
 
 	useEffect(() => {
-		setTotal(calculateTotal(invoiceItems));
+		setSubtotal(calculateSubtotal(invoiceItems));
 	}, [invoiceItems]);
 
-	function calculateTotal(invoiceItems: { name: number, quantity: number, price: number }[]) {
-		let total = 0;
+	useEffect(() => {
+		// Call calculateAndSetTotal() function here
+		calculateAndSetTotal(subtotal, discount, tax, shipping);
+	}, [subtotal, discount, tax, shipping]);
+
+	function calculateSubtotal(invoiceItems: { name: number, quantity: number, price: number }[]) {
+		let subtotal = 0;
 
 		for (const item of invoiceItems) {
-			total += item.quantity * item.price;
+			subtotal += item.quantity * item.price;
 		}
 
-		return total;
+		return subtotal;
+	}
+
+	function calculateAndSetTotal(subtotal: number, discount: number, tax: number, shipping: number) {
+		const calculatedTotal = (subtotal * (1 - (discount / 100))) + ((subtotal * (1 - (discount / 100))) * (tax / 100)) + shipping;
+		setTotal(calculatedTotal)
+	}
+
+	const handleDiscountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setDiscount(parseInt(e.target.value, 10));
+	}
+
+	const handleTaxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setTax(parseInt(e.target.value, 10));
+	}
+
+	const handleShippingChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setShipping(parseInt(e.target.value, 10));
 	}
 
 	const handleInvoiceNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -134,7 +163,7 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 			doc.text(`${item.name} x ${item.quantity} @ $${item.price} = $${item.quantity * item.price}`, 10, y);
 			y += 10;
 		}
-		doc.text(`Total: $${total}`, 10, y);
+		doc.text(`subTotal: $${subtotal}`, 10, y);
 		doc.save(`invoice-${invoiceNumber}.pdf`);
 	};
 
@@ -198,12 +227,12 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 									<input type="number" value={item.quantity} onChange={(e) => handleItemChange(index, 'quantity', parseInt(e.target.value, 10))} />
 								</label>
 								<label>
-									Price:
+									Price <span>{currency}</span>:
 									<input type="number" value={item.price} onChange={(e) => handleItemChange(index, 'price', parseInt(e.target.value, 10))} />
 								</label>
 								<label>
-									Amount
-									<input type="text" value={item.price*item.quantity} />
+									Amount <span>{currency}</span>:
+									<input type="text" value={item.price * item.quantity} readOnly/>
 								</label>
 								<label>
 									<button className='invoice__item-button' type="button" onClick={() => handleRemoveItem(index)}>Remove</button>
@@ -213,8 +242,21 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 
 						<button type="button" onClick={handleAddItem}>Add item</button>
 						<br />
-						<h4>Subtotal: ${total}</h4>
-						<h3>Tubotal: ${total}</h3>
+
+						<h4>Subtotal: ${subtotal}</h4>
+						<label>
+							Discount %:
+							<input type="number" value={discount} onChange={handleDiscountChange} />
+						</label>
+						<label>
+							Tax %:
+							<input type="number" value={tax} onChange={handleTaxChange} />
+						</label>
+						<label>
+							Shipping <span>{currency}</span>:
+							<input type="number" value={shipping} onChange={handleShippingChange} />
+						</label>
+						<h3>Total: ${total}</h3>
 						<button type="button" onClick={handleDownload}>Download invoice</button>
 
 					</article>
