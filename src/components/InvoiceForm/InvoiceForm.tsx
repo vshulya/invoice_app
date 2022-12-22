@@ -65,9 +65,10 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 	const [invoiceDueDate, setInvoiceDueDate] = useState('');
 	const [senderName, setSenderName] = useState('');
 	const [recipientName, setRecipientName] = useState('');
-
 	const [invoiceItems, setInvoiceItems] = useState<{ name: number, quantity: number, price: number }[]>([{ name: 0, quantity: 0, price: 0 }]);
+	const [invoiceItemAmount, setInvoiceItemAmount] = useState(0);
 	const [total, setTotal] = useState(0);
+
 
 	useEffect(() => {
 		setTotal(calculateTotal(invoiceItems));
@@ -104,15 +105,9 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 	};
 
 	const handleAddItem = () => {
-		setInvoiceItems([
-			...invoiceItems,
-			{
-				name: 0,
-				quantity: 0,
-				price: 0,
-			},
-		]);
-	};
+		const newItem = { name: 0, quantity: 0, price: 0 };
+		setInvoiceItems([...invoiceItems, newItem]);
+	}
 
 	const handleItemChange = (index: number, field: 'name' | 'quantity' | 'price', value: number) => {
 		const updatedItems = [...invoiceItems];
@@ -130,9 +125,11 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 		const doc = new jsPDF();
 		doc.text(`Invoice #${invoiceNumber}`, 10, 10);
 		doc.text(`Invoice date: ${invoiceDate.toDateString()}`, 10, 20);
-		doc.text(`Customer name: ${senderName}`, 10, 30);
-		doc.text('Invoice items:', 10, 40);
-		let y = 50;
+		doc.text(`Due to: ${invoiceDueDate.toString()}`, 10, 30);
+		doc.text(`Sender: ${senderName}`, 10, 40);
+		doc.text(`Recipient: ${recipientName}`, 10, 50);
+		doc.text('Invoice items:', 10, 60);
+		let y = 70;
 		for (const item of invoiceItems) {
 			doc.text(`${item.name} x ${item.quantity} @ $${item.price} = $${item.quantity * item.price}`, 10, y);
 			y += 10;
@@ -160,7 +157,7 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 								<div>
 									<label>
 										From:
-										<input type="text" value={senderName} onChange={handleSenderNameChange} required/>
+										<input type="text" value={senderName} onChange={handleSenderNameChange} required />
 									</label>
 								</div>
 							</div>
@@ -182,7 +179,7 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 								<div>
 									<label>
 										To:
-										<input type="text" value={recipientName} onChange={handleRecipientNameChange} required/>
+										<input type="text" value={recipientName} onChange={handleRecipientNameChange} required />
 									</label>
 								</div>
 							</div>
@@ -191,7 +188,7 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 						<h3>Invoice items:</h3>
 						{invoiceItems.map((item, index) => (
 							<div className='invoice__items' key={index}>
-								<label>
+								<label className='invoice__item'>
 									Name:
 									{/* <input type="text" value={item.name} onChange={(e) => handleItemChange(index, 'name', e.target.value)} />	 */}
 									<input type="number" value={item.name} onChange={(e) => handleItemChange(index, 'name', parseInt(e.target.value, 10))} />
@@ -204,12 +201,20 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 									Price:
 									<input type="number" value={item.price} onChange={(e) => handleItemChange(index, 'price', parseInt(e.target.value, 10))} />
 								</label>
-								<button type="button" onClick={() => handleRemoveItem(index)}>Remove</button>
+								<label>
+									Amount
+									<input type="text" value={item.price*item.quantity} />
+								</label>
+								<label>
+									<button className='invoice__item-button' type="button" onClick={() => handleRemoveItem(index)}>Remove</button>
+								</label>
 							</div>
 						))}
+
 						<button type="button" onClick={handleAddItem}>Add item</button>
 						<br />
-						<h3>Total: ${total}</h3>
+						<h4>Subtotal: ${total}</h4>
+						<h3>Tubotal: ${total}</h3>
 						<button type="button" onClick={handleDownload}>Download invoice</button>
 
 					</article>

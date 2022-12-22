@@ -41,5 +41,11 @@
 .invoice__items {
 	display: grid;
 	gap: 5px;
-  grid-template-columns: 2fr 1fr 1fr 1fr;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+	align-items: end;
+}
+
+.invoice__item-button {
+	height: calc(1rem * var(--line-height) + var(--form-element-spacing-vertical) * 2 + var(--border-width) * 2);
+	margin-top: calc(var(--spacing) * .25);
 }
