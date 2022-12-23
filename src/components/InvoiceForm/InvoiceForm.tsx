@@ -62,7 +62,7 @@ interface Props {
 const InvoiceApp: React.FC<Props> = (_props) => {
 	const [invoiceNumber, setInvoiceNumber] = useState<number>(1);
 	const [invoiceDate, setInvoiceDate] = useState(new Date());
-	const [invoiceDueDate, setInvoiceDueDate] = useState('');
+	const [invoiceDueDate, setInvoiceDueDate] = useState(new Date());
 	const [senderName, setSenderName] = useState('');
 	const [recipientName, setRecipientName] = useState('');
 	const [invoiceItems, setInvoiceItems] = useState<{ name: number, quantity: number, price: number }[]>([{ name: 0, quantity: 0, price: 0 }]);
@@ -74,6 +74,8 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 	const [total, setTotal] = useState(0);
 
 	const [currency, setCurrency] = useState('$');
+
+	const [showDueDate, setShowDueDate] = useState(false);
 
 
 
@@ -122,7 +124,7 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 	};
 
 	const handleInvoiceDueDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		setInvoiceDueDate(e.target.value);
+		setInvoiceDueDate(new Date(e.target.value));
 	};
 
 	const handleSenderNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -150,6 +152,11 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 		setInvoiceItems(updatedItems);
 	};
 
+	const handleAddDueTo = () => {
+		setShowDueDate(true);
+	};
+
+
 	const handleDownload = () => {
 		const doc = new jsPDF();
 		doc.text(`Invoice #${invoiceNumber}`, 10, 10);
@@ -166,6 +173,11 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 		doc.text(`subTotal: $${subtotal}`, 10, y);
 		doc.save(`invoice-${invoiceNumber}.pdf`);
 	};
+	let showDueDateButton = <button className="additional-label-button" type="button" onClick={handleAddDueTo}>Add Due to</button>;
+	let dueDate = (<label className="additional-label">
+	Due date:
+	<input type="date" value={invoiceDueDate.toISOString().substr(0, 10)} onChange={handleInvoiceDueDateChange} />
+	</label>);
 
 	return (
 		<main className='container'>
@@ -200,10 +212,7 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 										Invoice date:
 										<input type="date" value={invoiceDate.toISOString().substr(0, 10)} onChange={handleInvoiceDateChange} />
 									</label>
-									<label>
-										Due date:
-										<input type="date" value={invoiceDueDate} onChange={handleInvoiceDueDateChange} />
-									</label>
+									{showDueDate ? dueDate : showDueDateButton}
 								</div>
 								<div>
 									<label>
@@ -232,7 +241,7 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 								</label>
 								<label>
 									Amount <span>{currency}</span>:
-									<input type="text" value={item.price * item.quantity} readOnly/>
+									<input type="text" value={item.price * item.quantity} readOnly />
 								</label>
 								<label>
 									<button className='invoice__item-button' type="button" onClick={() => handleRemoveItem(index)}>Remove</button>
@@ -242,23 +251,25 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 
 						<button type="button" onClick={handleAddItem}>Add item</button>
 						<br />
-
-						<h4>Subtotal: ${subtotal}</h4>
-						<label>
-							Discount %:
-							<input type="number" value={discount} onChange={handleDiscountChange} />
-						</label>
-						<label>
-							Tax %:
-							<input type="number" value={tax} onChange={handleTaxChange} />
-						</label>
-						<label>
-							Shipping <span>{currency}</span>:
-							<input type="number" value={shipping} onChange={handleShippingChange} />
-						</label>
-						<h3>Total: ${total}</h3>
+						<section className='price'>
+							<div>
+								<h4>Subtotal: ${subtotal}</h4>
+								<label>
+									Discount %:
+									<input type="number" value={discount} onChange={handleDiscountChange} />
+								</label>
+								<label>
+									Tax %:
+									<input type="number" value={tax} onChange={handleTaxChange} />
+								</label>
+								<label>
+									Shipping <span>{currency}</span>:
+									<input type="number" value={shipping} onChange={handleShippingChange} />
+								</label>
+								<h3>Total: ${total}</h3>
+							</div>
+						</section>
 						<button type="button" onClick={handleDownload}>Download invoice</button>
-
 					</article>
 				</fieldset>
 			</form>
