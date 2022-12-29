@@ -1,63 +1,12 @@
-// import React, { useState } from "react";
-// import DatePicker from '../DatePicker/DatePicker'
-
-// function InvoiceForm() {
-// 	// const [isCalendarOpen, setCalendarIsOpen] = useState(false);
-
-// 	// function handleCalendarClick(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
-// 	// 	console.log('click')
-// 	// 	setCalendarIsOpen(true);
-// 	// };
-
-// 	return (
-// 		<main className="container">
-// 			<form>
-// 				<fieldset>
-// 					<article>
-// 						<div className="section__wrapper">
-// 							<div>
-// 								<section className='invoice__logo'>
-// 									<label htmlFor="invoice__logo">Add your logo
-// 										<div className="invoice__logo-view">
-// 											<input type="file" name="logo" accept="image/png, image/jpeg" /></div>
-// 									</label>
-// 								</section>
-// 							</div>
-// 							{/* <section className="invoice__date">
-// 								<h1>Invoice</h1>
-// 								<label htmlFor="invoice__date">Date
-// 									<input type="text" name="invoice-date" onClick={handleCalendarClick} />
-// 									<DatePicker
-// 										isOpen={isCalendarOpen}
-// 									/>;
-// 							</section> */}
-// 							<div>
-// 								<section className="invoice__date">
-// 									<h1>Invoice</h1>
-// 									<label htmlFor="invoice__number">#
-// 										<input type="number" name="number" />
-// 									</label>
-// 									<DatePicker />
-// 								</section>
-// 							</div>
-// 						</div>
-// 						<section className='addLogo'>
-// 						</section>
-// 					</article>
-// 				</fieldset>
-// 			</form>
-// 		</main >
-// 	)
-// }
-
-// export default InvoiceForm;
-
 import React, { useState, useEffect } from 'react';
-import jsPDF from 'jspdf';
+import PDFFile from '../PDFFile/PDFFile';
+import {PDFDownloadLink} from "@react-pdf/renderer";
+
 
 interface Props {
 	// props go here
 }
+
 
 const InvoiceApp: React.FC<Props> = (_props) => {
 	const [invoiceNumber, setInvoiceNumber] = useState<number>(1);
@@ -65,7 +14,9 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 	const [invoiceDueDate, setInvoiceDueDate] = useState(new Date());
 	const [senderName, setSenderName] = useState('');
 	const [recipientName, setRecipientName] = useState('');
-	const [invoiceItems, setInvoiceItems] = useState<{ name: number, quantity: number, price: number }[]>([{ name: 0, quantity: 0, price: 0 }]);
+	const [invoiceItems, setInvoiceItems] = useState<{ name: string, quantity: number, price: number }[]>([{ name: '', quantity: 0, price: 0 }]);
+	const [invoiceNote, setInvoiceNote] = React.useState('');
+
 
 	const [subtotal, setSubtotal] = useState(0);
 	const [discount, setDiscount] = useState<number>(0);
@@ -76,6 +27,9 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 	const [currency, setCurrency] = useState('$');
 
 	const [showDueDate, setShowDueDate] = useState(false);
+	const [showDiscount, setShowDiscount] = useState(false);
+	const [showTax, setShowTax] = useState(false);
+	const [showShipping, setShowShipping] = useState(false);
 
 
 
@@ -88,13 +42,13 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 		calculateAndSetTotal(subtotal, discount, tax, shipping);
 	}, [subtotal, discount, tax, shipping]);
 
-	function calculateSubtotal(invoiceItems: { name: number, quantity: number, price: number }[]) {
+	function calculateSubtotal(invoiceItems: { name: string, quantity: number, price: number }[]) {
 		let subtotal = 0;
-
+	
 		for (const item of invoiceItems) {
 			subtotal += item.quantity * item.price;
 		}
-
+	
 		return subtotal;
 	}
 
@@ -127,22 +81,30 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 		setInvoiceDueDate(new Date(e.target.value));
 	};
 
-	const handleSenderNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+	const handleSenderNameChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
 		setSenderName(e.target.value);
 	};
 
-	const handleRecipientNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+	const handleRecipientNameChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
 		setRecipientName(e.target.value);
 	};
 
 	const handleAddItem = () => {
-		const newItem = { name: 0, quantity: 0, price: 0 };
+		const newItem = { name: '', quantity: 0, price: 0 };
 		setInvoiceItems([...invoiceItems, newItem]);
 	}
 
-	const handleItemChange = (index: number, field: 'name' | 'quantity' | 'price', value: number) => {
+	const handleItemChange = (index: number, field: keyof { quantity: number; price: number }, value: number) => {
 		const updatedItems = [...invoiceItems];
+
 		updatedItems[index][field] = value;
+		setInvoiceItems(updatedItems);
+	};
+	const handleNameChange = (index:number, value: string) =>
+	{
+		const updatedItems = [...invoiceItems];
+
+		updatedItems[index].name = value;
 		setInvoiceItems(updatedItems);
 	};
 
@@ -152,34 +114,57 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 		setInvoiceItems(updatedItems);
 	};
 
+	const handleInvoiceNoteChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+		setInvoiceNote(e.target.value);
+	};
+
 	const handleAddDueTo = () => {
 		setShowDueDate(true);
 	};
 
-
-	const handleDownload = () => {
-		const doc = new jsPDF();
-		doc.text(`Invoice #${invoiceNumber}`, 10, 10);
-		doc.text(`Invoice date: ${invoiceDate.toDateString()}`, 10, 20);
-		doc.text(`Due to: ${invoiceDueDate.toString()}`, 10, 30);
-		doc.text(`Sender: ${senderName}`, 10, 40);
-		doc.text(`Recipient: ${recipientName}`, 10, 50);
-		doc.text('Invoice items:', 10, 60);
-		let y = 70;
-		for (const item of invoiceItems) {
-			doc.text(`${item.name} x ${item.quantity} @ $${item.price} = $${item.quantity * item.price}`, 10, y);
-			y += 10;
-		}
-		doc.text(`subTotal: $${subtotal}`, 10, y);
-		doc.save(`invoice-${invoiceNumber}.pdf`);
+	const handleAddDiscount = () => {
+		setShowDiscount(true);
 	};
-	let showDueDateButton = <button className="additional-label-button" type="button" onClick={handleAddDueTo}>Add Due to</button>;
-	let dueDate = (<label className="additional-label">
-	Due date:
-	<input type="date" value={invoiceDueDate.toISOString().substr(0, 10)} onChange={handleInvoiceDueDateChange} />
+
+	const handleAddTax = () => {
+		setShowTax(true);
+	};
+
+	const handleAddShipping = () => {
+		setShowShipping(true);
+	};
+
+	function handleDownload() {
+	}
+
+	// additional labels 
+	const showDueDateButton = <button type="button" onClick={handleAddDueTo}>Add Due to</button>;
+	const dueDateLabel = (<label>
+		Due date:
+		<input type="date" value={invoiceDueDate.toISOString().substr(0, 10)} onChange={handleInvoiceDueDateChange} />
 	</label>);
 
+	const showDiscountButton = <button type="button" onClick={handleAddDiscount}>Add Discount</button>;
+	const discountLabel = (<label>
+		Discount %:
+		<input type="number" value={discount} onChange={handleDiscountChange} />
+	</label>);
+
+	const showTaxButton = <button type="button" onClick={handleAddTax}>Add Tax</button>;
+	const taxLabel = (<label>
+		Tax %:
+		<input type="number" value={tax} onChange={handleTaxChange} />
+	</label>);
+
+	const showShippingButton = <button type="button" onClick={handleAddShipping}>Add Shipping</button>;
+	const shippingLabel = (<label>
+		Shipping <span>{currency}</span>:
+		<input type="number" value={shipping} onChange={handleShippingChange} />
+	</label>);
+
+
 	return (
+		
 		<main className='container'>
 			<form>
 				<fieldset>
@@ -198,7 +183,10 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 								<div>
 									<label>
 										From:
-										<input type="text" value={senderName} onChange={handleSenderNameChange} required />
+										<textarea 										
+										id="textarea-from-input"
+										rows={3}
+										cols={50} value={senderName} onChange={handleSenderNameChange} required />
 									</label>
 								</div>
 							</div>
@@ -212,12 +200,14 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 										Invoice date:
 										<input type="date" value={invoiceDate.toISOString().substr(0, 10)} onChange={handleInvoiceDateChange} />
 									</label>
-									{showDueDate ? dueDate : showDueDateButton}
+									{showDueDate ? dueDateLabel : showDueDateButton}
 								</div>
 								<div>
 									<label>
 										To:
-										<input type="text" value={recipientName} onChange={handleRecipientNameChange} required />
+										<textarea id="textarea-to-input"
+										rows={3}
+										cols={50}  value={recipientName} onChange={handleRecipientNameChange} required />
 									</label>
 								</div>
 							</div>
@@ -228,8 +218,7 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 							<div className='invoice__items' key={index}>
 								<label className='invoice__item'>
 									Name:
-									{/* <input type="text" value={item.name} onChange={(e) => handleItemChange(index, 'name', e.target.value)} />	 */}
-									<input type="number" value={item.name} onChange={(e) => handleItemChange(index, 'name', parseInt(e.target.value, 10))} />
+									<input type="text" value={item.name} onChange={(e) => handleNameChange(index,  e.target.value)} />
 								</label>
 								<label>
 									Quantity:
@@ -253,26 +242,50 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 						<br />
 						<section className='price'>
 							<div>
+								<label>
+									Notes
+									<textarea
+										id="textarea-input"
+										rows={10}
+										cols={50}
+										value={invoiceNote}
+										onChange={handleInvoiceNoteChange}
+									/>
+								</label>
+							</div>
+							<div>
 								<h4>Subtotal: ${subtotal}</h4>
-								<label>
-									Discount %:
-									<input type="number" value={discount} onChange={handleDiscountChange} />
-								</label>
-								<label>
-									Tax %:
-									<input type="number" value={tax} onChange={handleTaxChange} />
-								</label>
-								<label>
-									Shipping <span>{currency}</span>:
-									<input type="number" value={shipping} onChange={handleShippingChange} />
-								</label>
+								{showDiscount ? discountLabel : showDiscountButton}
+								{showTax ? taxLabel : showTaxButton}
+								{showShipping ? shippingLabel : showShippingButton}
+
 								<h3>Total: ${total}</h3>
 							</div>
 						</section>
-						<button type="button" onClick={handleDownload}>Download invoice</button>
 					</article>
 				</fieldset>
 			</form>
+			<PDFDownloadLink
+			document={<PDFFile 
+			invoiceNumber={invoiceNumber}
+			invoiceDate={invoiceDate}
+			invoiceDueDate={invoiceDueDate}
+			senderName={senderName}
+			recipientName={recipientName}
+			invoiceItems={invoiceItems}
+			invoiceNote={invoiceNote}
+
+			subtotal={subtotal}
+			discount={discount}
+			tax={tax}
+			shipping={shipping}
+			total={total}
+
+			currency={currency}
+
+			/> }>
+				{({loading}) => (loading ? 'Loading document...' : <button>Download invoice</button>)}
+			</PDFDownloadLink>
 		</main >
 	);
 };
