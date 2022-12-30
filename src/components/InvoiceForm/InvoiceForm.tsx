@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PDFFile from '../PDFFile/PDFFile';
 import {PDFDownloadLink} from "@react-pdf/renderer";
+import { ChangeEvent } from 'react';
 
 
 interface Props {
@@ -9,6 +10,7 @@ interface Props {
 
 
 const InvoiceApp: React.FC<Props> = (_props) => {
+	const [invoiceLogo, setInvoiceLogo] = useState('');
 	const [invoiceNumber, setInvoiceNumber] = useState<number>(1);
 	const [invoiceDate, setInvoiceDate] = useState(new Date());
 	const [invoiceDueDate, setInvoiceDueDate] = useState(new Date());
@@ -68,6 +70,25 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 	const handleShippingChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setShipping(parseInt(e.target.value, 10));
 	}
+
+	// const handleLogoChange = (e: { target: { value: React.SetStateAction<string>; }; }) => {
+	// 	setInvoiceLogo((e.target.value));
+	// };
+
+
+
+const handleLogoChange = (event: ChangeEvent<HTMLInputElement>) => {
+	if (event.target.files) {
+		// get the selected file
+		const file = event.target.files[0];
+	
+		// create a URL for the file
+		const fileUrl = URL.createObjectURL(file);
+	
+		// update the invoiceLogo state variable with the file URL
+		setInvoiceLogo(fileUrl);
+	  }
+}
 
 	const handleInvoiceNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setInvoiceNumber(parseInt(e.target.value, 10));
@@ -134,9 +155,6 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 		setShowShipping(true);
 	};
 
-	function handleDownload() {
-	}
-
 	// additional labels 
 	const showDueDateButton = <button type="button" onClick={handleAddDueTo}>Add Due to</button>;
 	const dueDateLabel = (<label>
@@ -176,7 +194,7 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 									<div className='invoice__logo'>
 										<label htmlFor="invoice__logo">Add your logo
 											<div className="invoice__logo-view">
-												<input type="file" name="logo" accept="image/png, image/jpeg" /></div>
+												<input type="file" name="logo" accept="image/png, image/jpeg" onChange={handleLogoChange}/></div>
 										</label>
 									</div>
 								</div>
@@ -267,6 +285,7 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 			</form>
 			<PDFDownloadLink
 			document={<PDFFile 
+			invoiceLogo={invoiceLogo}
 			invoiceNumber={invoiceNumber}
 			invoiceDate={invoiceDate}
 			invoiceDueDate={invoiceDueDate}
