@@ -13,7 +13,7 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 	const [invoiceLogo, setInvoiceLogo] = useState('');
 	const [invoiceNumber, setInvoiceNumber] = useState<number>(1);
 	const [invoiceDate, setInvoiceDate] = useState(new Date());
-	const [invoiceDueDate, setInvoiceDueDate] = useState(new Date());
+	const [invoiceDueDate, setInvoiceDueDate] = useState<Date | null>(null);
 	const [senderName, setSenderName] = useState('');
 	const [recipientName, setRecipientName] = useState('');
 	const [invoiceItems, setInvoiceItems] = useState<{ name: string, quantity: number, price: number }[]>([{ name: '', quantity: 0, price: 0 }]);
@@ -141,6 +141,7 @@ const handleLogoChange = (event: ChangeEvent<HTMLInputElement>) => {
 
 	const handleAddDueTo = () => {
 		setShowDueDate(true);
+		setInvoiceDueDate(new Date());
 	};
 
 	const handleAddDiscount = () => {
@@ -157,10 +158,14 @@ const handleLogoChange = (event: ChangeEvent<HTMLInputElement>) => {
 
 	// additional labels 
 	const showDueDateButton = <button type="button" onClick={handleAddDueTo}>Add Due to</button>;
-	const dueDateLabel = (<label>
-		Due date:
+	const dueDateToLabel = (<label>
+		Due Date:
+		{ invoiceDueDate && (
 		<input type="date" value={invoiceDueDate.toISOString().substr(0, 10)} onChange={handleInvoiceDueDateChange} />
+	)}
+		{/* <input type="date" value={invoiceDueDate.toISOString().substr(0, 10)} onChange={handleInvoiceDueDateChange} /> */}
 	</label>);
+
 
 	const showDiscountButton = <button type="button" onClick={handleAddDiscount}>Add Discount</button>;
 	const discountLabel = (<label>
@@ -218,7 +223,7 @@ const handleLogoChange = (event: ChangeEvent<HTMLInputElement>) => {
 										Invoice date:
 										<input type="date" value={invoiceDate.toISOString().substr(0, 10)} onChange={handleInvoiceDateChange} />
 									</label>
-									{showDueDate ? dueDateLabel : showDueDateButton}
+									{showDueDate ? dueDateToLabel : showDueDateButton}
 								</div>
 								<div>
 									<label>
