@@ -51,11 +51,12 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 			subtotal += item.quantity * item.price;
 		}
 	
-		return subtotal;
+		return subtotal = parseFloat(subtotal.toFixed(2));;
 	}
 
 	function calculateAndSetTotal(subtotal: number, discount: number, tax: number, shipping: number) {
-		const calculatedTotal = (subtotal * (1 - (discount / 100))) + ((subtotal * (1 - (discount / 100))) * (tax / 100)) + shipping;
+		let calculatedTotal = (subtotal * (1 - (discount / 100))) + ((subtotal * (1 - (discount / 100))) * (tax / 100)) + shipping;
+		calculatedTotal = parseFloat(calculatedTotal.toFixed(2));
 		setTotal(calculatedTotal)
 	}
 
@@ -115,12 +116,12 @@ const handleLogoChange = (event: ChangeEvent<HTMLInputElement>) => {
 		setInvoiceItems([...invoiceItems, newItem]);
 	}
 
-	const handleItemChange = (index: number, field: keyof { quantity: number; price: number }, value: number) => {
+	const handleItemChange = (index: number, field: keyof { quantity: number; price: number }, value: string) => {
 		const updatedItems = [...invoiceItems];
-
-		updatedItems[index][field] = value;
+		updatedItems[index][field] = parseFloat(value);
 		setInvoiceItems(updatedItems);
 	};
+
 	const handleNameChange = (index:number, value: string) =>
 	{
 		const updatedItems = [...invoiceItems];
@@ -139,6 +140,7 @@ const handleLogoChange = (event: ChangeEvent<HTMLInputElement>) => {
 		setInvoiceNote(e.target.value);
 	};
 
+	// adding additional labels
 	const handleAddDueTo = () => {
 		setShowDueDate(true);
 		setInvoiceDueDate(new Date());
@@ -163,7 +165,6 @@ const handleLogoChange = (event: ChangeEvent<HTMLInputElement>) => {
 		{ invoiceDueDate && (
 		<input type="date" value={invoiceDueDate.toISOString().substr(0, 10)} onChange={handleInvoiceDueDateChange} />
 	)}
-		{/* <input type="date" value={invoiceDueDate.toISOString().substr(0, 10)} onChange={handleInvoiceDueDateChange} /> */}
 	</label>);
 
 
@@ -208,7 +209,7 @@ const handleLogoChange = (event: ChangeEvent<HTMLInputElement>) => {
 										From:
 										<textarea 										
 										id="textarea-from-input"
-										rows={3}
+										rows={5}
 										cols={50} value={senderName} onChange={handleSenderNameChange} required />
 									</label>
 								</div>
@@ -229,7 +230,7 @@ const handleLogoChange = (event: ChangeEvent<HTMLInputElement>) => {
 									<label>
 										To:
 										<textarea id="textarea-to-input"
-										rows={3}
+										rows={5}
 										cols={50}  value={recipientName} onChange={handleRecipientNameChange} required />
 									</label>
 								</div>
@@ -245,15 +246,15 @@ const handleLogoChange = (event: ChangeEvent<HTMLInputElement>) => {
 								</label>
 								<label>
 									Quantity:
-									<input type="number" value={item.quantity} onChange={(e) => handleItemChange(index, 'quantity', parseInt(e.target.value, 10))} />
+									<input type="number" step="any" value={item.quantity} onChange={(e) => handleItemChange(index, 'quantity', e.target.value)} />
 								</label>
 								<label>
 									Price <span>{currency}</span>:
-									<input type="number" value={item.price} onChange={(e) => handleItemChange(index, 'price', parseInt(e.target.value, 10))} />
+									<input type="number" step="any" value={item.price} onChange={(e) => handleItemChange(index, 'price', e.target.value)}/>
 								</label>
 								<label>
 									Amount <span>{currency}</span>:
-									<input type="text" value={item.price * item.quantity} readOnly />
+									<input type="text" value={(item.price * item.quantity).toFixed(2)} readOnly />
 								</label>
 								<label>
 									<button className='invoice__item-button' type="button" onClick={() => handleRemoveItem(index)}>Remove</button>
@@ -308,7 +309,8 @@ const handleLogoChange = (event: ChangeEvent<HTMLInputElement>) => {
 			currency={currency}
 
 			/> }>
-				{({loading}) => (loading ? 'Loading document...' : <button>Download invoice</button>)}
+				{({loading}) => (loading ? <button>'Loading document...'</button> : <button>Download invoice</button>)} 
+				{/* todo not sure about Loading document... */}
 			</PDFDownloadLink>
 		</main >
 	);
