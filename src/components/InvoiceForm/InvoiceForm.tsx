@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PDFFile from '../PDFFile/PDFFile';
-import {PDFDownloadLink} from "@react-pdf/renderer";
+import { PDFDownloadLink } from "@react-pdf/renderer";
 import { ChangeEvent } from 'react';
 
 
@@ -46,11 +46,11 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 
 	function calculateSubtotal(invoiceItems: { name: string, quantity: number, price: number }[]) {
 		let subtotal = 0;
-	
+
 		for (const item of invoiceItems) {
 			subtotal += item.quantity * item.price;
 		}
-	
+
 		return subtotal = parseFloat(subtotal.toFixed(2));;
 	}
 
@@ -78,18 +78,18 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 
 
 
-const handleLogoChange = (event: ChangeEvent<HTMLInputElement>) => {
-	if (event.target.files) {
-		// get the selected file
-		const file = event.target.files[0];
-	
-		// create a URL for the file
-		const fileUrl = URL.createObjectURL(file);
-	
-		// update the invoiceLogo state variable with the file URL
-		setInvoiceLogo(fileUrl);
-	  }
-}
+	const handleLogoChange = (event: ChangeEvent<HTMLInputElement>) => {
+		if (event.target.files) {
+			// get the selected file
+			const file = event.target.files[0];
+
+			// create a URL for the file
+			const fileUrl = URL.createObjectURL(file);
+
+			// update the invoiceLogo state variable with the file URL
+			setInvoiceLogo(fileUrl);
+		}
+	}
 
 	const handleInvoiceNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setInvoiceNumber(parseInt(e.target.value, 10));
@@ -122,8 +122,7 @@ const handleLogoChange = (event: ChangeEvent<HTMLInputElement>) => {
 		setInvoiceItems(updatedItems);
 	};
 
-	const handleNameChange = (index:number, value: string) =>
-	{
+	const handleNameChange = (index: number, value: string) => {
 		const updatedItems = [...invoiceItems];
 
 		updatedItems[index].name = value;
@@ -146,49 +145,43 @@ const handleLogoChange = (event: ChangeEvent<HTMLInputElement>) => {
 		setInvoiceDueDate(new Date());
 	};
 
-	const handleAddDiscount = () => {
-		setShowDiscount(true);
-	};
+	const toggleAddDiscount = () => setShowDiscount(!showDiscount);
 
-	const handleAddTax = () => {
-		setShowTax(true);
-	};
+	const toggleAddTax = () => setShowTax(!showTax);
 
-	const handleAddShipping = () => {
-		setShowShipping(true);
-	};
+	const toggleAddShipping = () => setShowShipping(!showShipping);
 
 	// additional labels 
 	const showDueDateButton = <button type="button" onClick={handleAddDueTo}>Add Due to</button>;
 	const dueDateToLabel = (<label>
 		Due Date:
-		{ invoiceDueDate && (
-		<input type="date" value={invoiceDueDate.toISOString().substr(0, 10)} onChange={handleInvoiceDueDateChange} />
-	)}
+		{invoiceDueDate && (
+			<input type="date" value={invoiceDueDate.toISOString().substr(0, 10)} onChange={handleInvoiceDueDateChange} />
+		)}
 	</label>);
 
 
-	const showDiscountButton = <button type="button" onClick={handleAddDiscount}>Add Discount</button>;
-	const discountLabel = (<label>
+	const showDiscountButton = <button type="button" onClick={toggleAddDiscount}>Add Discount</button>;
+	const discountLabel = (<div className="add__label"><label className='add__label-label'>
 		Discount %:
 		<input type="number" value={discount} onChange={handleDiscountChange} />
-	</label>);
+	</label><label><button className="add__button outline secondary" type="button" onClick={toggleAddDiscount}>x</button></label></div>);
 
-	const showTaxButton = <button type="button" onClick={handleAddTax}>Add Tax</button>;
-	const taxLabel = (<label>
+	const showTaxButton = <button type="button" onClick={toggleAddTax}>Add Tax</button>;
+	const taxLabel = (<div className='add__label'><label className='add__label-label'>
 		Tax %:
-		<input type="number" value={tax} onChange={handleTaxChange} />
-	</label>);
+		<input type="number" value={tax} onChange={handleTaxChange} /></label><label><button className="add__button outline secondary" type="button" onClick={toggleAddTax}>x</button></label>
+	</div>);
 
-	const showShippingButton = <button type="button" onClick={handleAddShipping}>Add Shipping</button>;
-	const shippingLabel = (<label>
+	const showShippingButton = <button type="button" onClick={toggleAddShipping}>Add Shipping</button>;
+	const shippingLabel = (<div className='add__label'><label className='add__label-label'>
 		Shipping <span>{currency}</span>:
-		<input type="number" value={shipping} onChange={handleShippingChange} />
-	</label>);
+		<input type="number" value={shipping} onChange={handleShippingChange} /> </label><label><button className="add__button outline secondary" type="button" onClick={toggleAddShipping}>x</button>
+	</label></div>);
 
 
 	return (
-		
+
 		<main className='container'>
 			<form>
 				<fieldset>
@@ -200,17 +193,17 @@ const handleLogoChange = (event: ChangeEvent<HTMLInputElement>) => {
 									<div className='invoice__logo'>
 										<label htmlFor="invoice__logo">Add your logo
 											<div className="invoice__logo-view">
-												<input type="file" name="logo" accept="image/png, image/jpeg" onChange={handleLogoChange}/></div>
+												<input type="file" name="logo" accept="image/png, image/jpeg" onChange={handleLogoChange} /></div>
 										</label>
 									</div>
 								</div>
 								<div>
 									<label>
 										From:
-										<textarea 										
-										id="textarea-from-input"
-										rows={5}
-										cols={50} value={senderName} onChange={handleSenderNameChange} required />
+										<textarea
+											id="textarea-from-input"
+											rows={5}
+											cols={50} value={senderName} onChange={handleSenderNameChange} required />
 									</label>
 								</div>
 							</div>
@@ -230,8 +223,8 @@ const handleLogoChange = (event: ChangeEvent<HTMLInputElement>) => {
 									<label>
 										To:
 										<textarea id="textarea-to-input"
-										rows={5}
-										cols={50}  value={recipientName} onChange={handleRecipientNameChange} required />
+											rows={5}
+											cols={50} value={recipientName} onChange={handleRecipientNameChange} required />
 									</label>
 								</div>
 							</div>
@@ -242,7 +235,7 @@ const handleLogoChange = (event: ChangeEvent<HTMLInputElement>) => {
 							<div className='invoice__items' key={index}>
 								<label className='invoice__item'>
 									Name:
-									<input type="text" value={item.name} onChange={(e) => handleNameChange(index,  e.target.value)} />
+									<input type="text" value={item.name} onChange={(e) => handleNameChange(index, e.target.value)} />
 								</label>
 								<label>
 									Quantity:
@@ -250,7 +243,7 @@ const handleLogoChange = (event: ChangeEvent<HTMLInputElement>) => {
 								</label>
 								<label>
 									Price <span>{currency}</span>:
-									<input type="number" step="any" value={item.price} onChange={(e) => handleItemChange(index, 'price', e.target.value)}/>
+									<input type="number" step="any" value={item.price} onChange={(e) => handleItemChange(index, 'price', e.target.value)} />
 								</label>
 								<label>
 									Amount <span>{currency}</span>:
@@ -290,26 +283,26 @@ const handleLogoChange = (event: ChangeEvent<HTMLInputElement>) => {
 				</fieldset>
 			</form>
 			<PDFDownloadLink
-			document={<PDFFile 
-			invoiceLogo={invoiceLogo}
-			invoiceNumber={invoiceNumber}
-			invoiceDate={invoiceDate}
-			invoiceDueDate={invoiceDueDate}
-			senderName={senderName}
-			recipientName={recipientName}
-			invoiceItems={invoiceItems}
-			invoiceNote={invoiceNote}
+				document={<PDFFile
+					invoiceLogo={invoiceLogo}
+					invoiceNumber={invoiceNumber}
+					invoiceDate={invoiceDate}
+					invoiceDueDate={invoiceDueDate}
+					senderName={senderName}
+					recipientName={recipientName}
+					invoiceItems={invoiceItems}
+					invoiceNote={invoiceNote}
 
-			subtotal={subtotal}
-			discount={discount}
-			tax={tax}
-			shipping={shipping}
-			total={total}
+					subtotal={subtotal}
+					discount={discount}
+					tax={tax}
+					shipping={shipping}
+					total={total}
 
-			currency={currency}
+					currency={currency}
 
-			/> }>
-				{({loading}) => (loading ? <button>'Loading document...'</button> : <button>Download invoice</button>)} 
+				/>}>
+				{({ loading }) => (loading ? <button>'Loading document...'</button> : <button>Download invoice</button>)}
 				{/* todo not sure about Loading document... */}
 			</PDFDownloadLink>
 		</main >
