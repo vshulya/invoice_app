@@ -193,7 +193,7 @@ function PDFFile(props: {
                 <Text style={{ ...styles.tableCellName, flex: 2 }}>{item.name}</Text>
                 <Text style={styles.tableCell}><Text style={styles.data}>{item.quantity}</Text></Text>
                 <Text style={styles.tableCell}><Text style={styles.data}>{item.price}</Text></Text>
-                <Text style={styles.tableCell}><Text style={styles.data}>{item.price * item.quantity}</Text></Text>
+                <Text style={styles.tableCell}><Text style={styles.data}>{(item.price * item.quantity).toFixed(2)}</Text></Text>
               </View>
             ))}
           </View>

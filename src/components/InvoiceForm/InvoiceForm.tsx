@@ -33,6 +33,8 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 	const [showTax, setShowTax] = useState(false);
 	const [showShipping, setShowShipping] = useState(false);
 
+	const [isFormValid, setIsFormValid] = useState(false);
+
 
 
 	useEffect(() => {
@@ -43,6 +45,37 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 		// Call calculateAndSetTotal() function here
 		calculateAndSetTotal(subtotal, discount, tax, shipping);
 	}, [subtotal, discount, tax, shipping]);
+
+	useEffect(() => {
+		setIsFormValid(validateForm());
+	}, [senderName, recipientName]);
+
+	const validateForm = () => {
+    const textarea = document.querySelector('textarea');
+    if(textarea && !textarea.checkValidity()) {
+        return false;
+    } else {
+        return senderName.trim().length > 0 && recipientName.trim().length > 0;
+    }
+}
+
+const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+	e.preventDefault();
+	if(validateForm()) {
+		setIsFormValid(true);
+	}
+};
+
+	// const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+	// 	e.preventDefault();
+	// 	const textarea = e.currentTarget.querySelector('textarea');
+	// 	//check if textarea is not null, then check if the textarea is valid or not
+	// 	if(textarea && !textarea.checkValidity()) {
+	// 		textarea.setCustomValidity('This field is required');
+	// } else {
+	// 		setIsFormValid(true);
+	// 	}
+	// };
 
 	function calculateSubtotal(invoiceItems: { name: string, quantity: number, price: number }[]) {
 		let subtotal = 0;
@@ -61,22 +94,31 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 	}
 
 	const handleDiscountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		setDiscount(parseInt(e.target.value, 10));
+		const value = e.target.value;
+		// check if value is a valid decimal
+		if (/^\d+(\.\d{1,2})?$/.test(value)) {
+			//the parseFloat() function to convert the input string to a decimal number
+			setDiscount(parseFloat(value));
+		}
 	}
 
 	const handleTaxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		setTax(parseInt(e.target.value, 10));
+		const value = e.target.value;
+		// check if value is a valid decimal
+		if (/^\d+(\.\d{1,2})?$/.test(value)) {
+			//the parseFloat() function to convert the input string to a decimal number
+			setTax(parseFloat(value));
+		}
 	}
 
 	const handleShippingChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		setShipping(parseInt(e.target.value, 10));
+		const value = e.target.value;
+		// check if value is a valid decimal
+		if (/^\d+(\.\d{1,2})?$/.test(value)) {
+			//the parseFloat() function to convert the input string to a decimal number
+			setShipping(parseFloat(value));
+		}
 	}
-
-	// const handleLogoChange = (e: { target: { value: React.SetStateAction<string>; }; }) => {
-	// 	setInvoiceLogo((e.target.value));
-	// };
-
-
 
 	const handleLogoChange = (event: ChangeEvent<HTMLInputElement>) => {
 		if (event.target.files) {
@@ -164,26 +206,26 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 	const showDiscountButton = <button type="button" onClick={toggleAddDiscount}>Add Discount</button>;
 	const discountLabel = (<div className="add__label"><label className='add__label-label'>
 		Discount %:
-		<input type="number" value={discount} onChange={handleDiscountChange} />
+		<input type="number" step="any" value={discount} onChange={handleDiscountChange} />
 	</label><label><button className="add__button outline secondary" type="button" onClick={toggleAddDiscount}>x</button></label></div>);
 
 	const showTaxButton = <button type="button" onClick={toggleAddTax}>Add Tax</button>;
 	const taxLabel = (<div className='add__label'><label className='add__label-label'>
 		Tax %:
-		<input type="number" value={tax} onChange={handleTaxChange} /></label><label><button className="add__button outline secondary" type="button" onClick={toggleAddTax}>x</button></label>
+		<input type="number" step="any" value={tax} onChange={handleTaxChange} /></label><label><button className="add__button outline secondary" type="button" onClick={toggleAddTax}>x</button></label>
 	</div>);
 
 	const showShippingButton = <button type="button" onClick={toggleAddShipping}>Add Shipping</button>;
 	const shippingLabel = (<div className='add__label'><label className='add__label-label'>
 		Shipping <span>{currency}</span>:
-		<input type="number" value={shipping} onChange={handleShippingChange} /> </label><label><button className="add__button outline secondary" type="button" onClick={toggleAddShipping}>x</button>
-	</label></div>);
+		<input type="number" step="any" value={shipping} onChange={handleShippingChange} /> </label><label><button className="add__button outline secondary" type="button" onClick={toggleAddShipping}>x</button>
+		</label></div>);
 
 
 	return (
 
 		<main className='container'>
-			<form>
+			<form onSubmit={handleSubmit}>
 				<fieldset>
 					<article>
 						{/* invoice info */}
@@ -282,7 +324,8 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 					</article>
 				</fieldset>
 			</form>
-			<PDFDownloadLink
+
+			{isFormValid ? <PDFDownloadLink
 				document={<PDFFile
 					invoiceLogo={invoiceLogo}
 					invoiceNumber={invoiceNumber}
@@ -302,9 +345,9 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 					currency={currency}
 
 				/>}>
-				{({ loading }) => (loading ? <button>'Loading document...'</button> : <button>Download invoice</button>)}
+				{({ loading }) => (loading ? <button>'Loading document...'</button> : <button type="submit">Download invoice</button>)}
 				{/* todo not sure about Loading document... */}
-			</PDFDownloadLink>
+			</PDFDownloadLink> : <button disabled>Download invoice</button>}
 		</main >
 	);
 };
