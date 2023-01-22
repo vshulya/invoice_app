@@ -51,31 +51,21 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 	}, [senderName, recipientName]);
 
 	const validateForm = () => {
-    const textarea = document.querySelector('textarea');
-    if(textarea && !textarea.checkValidity()) {
-        return false;
-    } else {
-        return senderName.trim().length > 0 && recipientName.trim().length > 0;
-    }
-}
-
-const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-	e.preventDefault();
-	if(validateForm()) {
-		setIsFormValid(true);
+		const textarea = document.querySelector('textarea');
+		if (textarea && !textarea.checkValidity()) {
+			return false;
+		} else {
+			return senderName.trim().length > 0 && recipientName.trim().length > 0;
+		}
 	}
-};
 
-	// const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-	// 	e.preventDefault();
-	// 	const textarea = e.currentTarget.querySelector('textarea');
-	// 	//check if textarea is not null, then check if the textarea is valid or not
-	// 	if(textarea && !textarea.checkValidity()) {
-	// 		textarea.setCustomValidity('This field is required');
-	// } else {
-	// 		setIsFormValid(true);
-	// 	}
-	// };
+	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+		if (validateForm()) {
+			setIsFormValid(true);
+		}
+	};
+
 
 	function calculateSubtotal(invoiceItems: { name: string, quantity: number, price: number }[]) {
 		let subtotal = 0;
@@ -93,14 +83,21 @@ const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		setTotal(calculatedTotal)
 	}
 
+	// const handleDiscountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+	// 	const value = e.target.value;
+	// 	// check if value is a valid decimal
+	// 	if (value === "" || (/^\d+(\.\d{1,2})?$/.test(value))) {
+	// 		//the parseFloat() function to convert the input string to a decimal number
+	// 		setDiscount(parseFloat(value));
+	// 	}
+	// }
+
 	const handleDiscountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const value = e.target.value;
-		// check if value is a valid decimal
-		if (/^\d+(\.\d{1,2})?$/.test(value)) {
-			//the parseFloat() function to convert the input string to a decimal number
-			setDiscount(parseFloat(value));
+		if (value === "" || !isNaN(value as any)) {
+			setDiscount(value === "" ? 0 : parseFloat(value));
 		}
-	}
+	};
 
 	const handleTaxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const value = e.target.value;
@@ -160,9 +157,17 @@ const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 
 	const handleItemChange = (index: number, field: keyof { quantity: number; price: number }, value: string) => {
 		const updatedItems = [...invoiceItems];
-		updatedItems[index][field] = parseFloat(value);
-		setInvoiceItems(updatedItems);
+		
+		//setInvoiceItems(updatedItems);
+
+		// check if value is a valid decimal
+		if (/^\d+(\.\d{1,2})?$/.test(value)){
+			updatedItems[index][field] = parseFloat(value);
+			//the parseFloat() function to convert the input string to a decimal number
+			setInvoiceItems(updatedItems);
+		};
 	};
+
 
 	const handleNameChange = (index: number, value: string) => {
 		const updatedItems = [...invoiceItems];
@@ -245,7 +250,10 @@ const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 										<textarea
 											id="textarea-from-input"
 											rows={5}
-											cols={50} value={senderName} onChange={handleSenderNameChange} required />
+											cols={50}
+											value={senderName}
+											placeholder="required"
+											onChange={handleSenderNameChange} required />
 									</label>
 								</div>
 							</div>
@@ -266,7 +274,10 @@ const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 										To:
 										<textarea id="textarea-to-input"
 											rows={5}
-											cols={50} value={recipientName} onChange={handleRecipientNameChange} required />
+											cols={50}
+											value={recipientName}
+											placeholder="required"
+											onChange={handleRecipientNameChange} required />
 									</label>
 								</div>
 							</div>
