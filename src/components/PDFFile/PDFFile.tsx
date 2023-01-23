@@ -23,6 +23,7 @@ const styles = StyleSheet.create({
 
   block: {
     marginBottom: 50,
+    display: 'flex',
   },
 
   container: {
@@ -50,7 +51,9 @@ const styles = StyleSheet.create({
 
   tableRow: {
     flexDirection: 'row',
+    display: 'flex',
   },
+
   tableCellTitle: {
     flex: 1,
     border: '1px solid grey',
@@ -162,6 +165,7 @@ function PDFFile(props: {
     <>
       <Document>
         <Page size="A4" orientation="portrait" style={styles.page}>
+
           <View style={styles.block}>
             <View style={styles.container}>
               <View style={styles.columnHeader}>
@@ -171,22 +175,23 @@ function PDFFile(props: {
                 <Text style={[styles.title, { alignSelf: 'flex-end' }]}>Invoice <Text style={styles.data}>#{props.invoiceNumber}</Text></Text>
                 <Text style={[styles.line, { alignSelf: 'flex-end' }]}>Date: <Text style={styles.data}>{formattedDate}</Text></Text>
                 {props.invoiceDueDate ? <Text style={[styles.line, { alignSelf: 'flex-end' }]}>Due Date: <Text style={styles.data}>{props.invoiceDueDate.toLocaleDateString("en-US", { day: "2-digit", month: "short", year: "numeric" })}</Text></Text> : null}
-
               </View>
             </View>
           </View>
           <View style={styles.block}>
             <View style={styles.container}>
-              <View style={[styles.columnHeader, { marginRight: 10}]}><Text style={styles.line}>From: <Text style={styles.data}>{props.senderName}</Text></Text></View>
+              <View style={[styles.columnHeader, { marginRight: 10 }]}><Text style={styles.line}>From: <Text style={styles.data}>{props.senderName}</Text></Text></View>
               <View style={styles.columnHeader}><Text style={styles.line}>To: <Text style={styles.data}>{props.recipientName}</Text></Text></View>
             </View>
           </View>
+
           <View style={styles.block}>
-            <View style={[styles.tableRow, { marginTop: 50, }]}>
-              <Text style={{ ...styles.tableCellNameTitle, flex: 2 }}>Name</Text>
-              <Text style={styles.tableCellTitle}>Quantity</Text>
-              <Text style={styles.tableCellTitle}>Price</Text>
-              <Text style={styles.tableCellTitle}>Amount</Text>
+
+              <View style={styles.tableRow}>
+                <Text style={{ ...styles.tableCellNameTitle, flex: 2 }}>Name</Text>
+                <Text style={styles.tableCellTitle}>Quantity</Text>
+                <Text style={styles.tableCellTitle}>Price</Text>
+                <Text style={styles.tableCellTitle}>Amount</Text>
             </View>
             {props.invoiceItems.map((item, index) => (
               <View key={index} style={styles.tableRow}>
@@ -196,22 +201,28 @@ function PDFFile(props: {
                 <Text style={styles.tableCell}><Text style={styles.data}>{(item.price * item.quantity).toFixed(2)}</Text></Text>
               </View>
             ))}
-          </View>
-          <View style={styles.block}>
-            <View style={styles.priceBlock}>
 
-              <View style={styles.price}>
-                <Text style={styles.line}>Subtotal: </Text> <Text style={styles.data}>{props.subtotal}{props.currency}</Text>
-                {props.discount !== 0 && <><Text style={styles.line}>Discount: </Text><Text style={styles.data}>{props.discount}%</Text></>}
-                {props.tax !== 0 && <><Text style={styles.line}>Tax: </Text><Text style={styles.data}>{props.tax}%</Text></>}
-                {props.shipping !== 0 && <><Text style={styles.line}>Shipping: </Text><Text style={styles.data}>{props.shipping}{props.currency}</Text></>}
-                <Text style={[styles.line, styles.lineTotal]}>Total: </Text> <Text style={[styles.data, styles.lineTotalData]}>{props.total}{props.currency}</Text>
+
+
+            <View style={styles.block}>
+              <View style={styles.priceBlock}>
+
+                <View style={styles.price}>
+                  <Text style={styles.line}>Subtotal: </Text> <Text style={styles.data}>{props.subtotal}{props.currency}</Text>
+                  {props.discount !== 0 && <><Text style={styles.line}>Discount: </Text><Text style={styles.data}>{props.discount}%</Text></>}
+                  {props.tax !== 0 && <><Text style={styles.line}>Tax: </Text><Text style={styles.data}>{props.tax}%</Text></>}
+                  {props.shipping !== 0 && <><Text style={styles.line}>Shipping: </Text><Text style={styles.data}>{props.shipping}{props.currency}</Text></>}
+                  <Text style={[styles.line, styles.lineTotal]}>Total: </Text> <Text style={[styles.data, styles.lineTotalData]}>{props.total}{props.currency}</Text>
+                </View>
+
+                <View style={styles.notes}>
+                  <Text style={styles.line}>Notes: <Text style={styles.data}>{props.invoiceNote}</Text></Text></View>
               </View>
-
-              <View style={styles.notes}>
-                <Text style={styles.line}>Notes: <Text style={styles.data}>{props.invoiceNote}</Text></Text></View>
             </View>
           </View>
+
+
+
 
           <Text
             style={styles.pageNumber}

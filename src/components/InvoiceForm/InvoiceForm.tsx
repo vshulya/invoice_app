@@ -99,21 +99,23 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 		}
 	};
 
+	const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+		if ((e.key === 'Backspace' || e.key === 'Delete') && e.currentTarget.value.endsWith('0')) {
+			e.currentTarget.value = e.currentTarget.value.slice(0, -1);
+		}
+	}
+
 	const handleTaxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const value = e.target.value;
-		// check if value is a valid decimal
-		if (/^\d+(\.\d{1,2})?$/.test(value)) {
-			//the parseFloat() function to convert the input string to a decimal number
-			setTax(parseFloat(value));
+		if (value === "" || !isNaN(value as any)) {
+			setTax(value === "" ? 0 : parseFloat(value));
 		}
 	}
 
 	const handleShippingChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const value = e.target.value;
-		// check if value is a valid decimal
-		if (/^\d+(\.\d{1,2})?$/.test(value)) {
-			//the parseFloat() function to convert the input string to a decimal number
-			setShipping(parseFloat(value));
+		if (value === "" || !isNaN(value as any)) {
+			setShipping(value === "" ? 0 : parseFloat(value));
 		}
 	}
 
@@ -157,11 +159,11 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 
 	const handleItemChange = (index: number, field: keyof { quantity: number; price: number }, value: string) => {
 		const updatedItems = [...invoiceItems];
-		
+
 		//setInvoiceItems(updatedItems);
 
 		// check if value is a valid decimal
-		if (/^\d+(\.\d{1,2})?$/.test(value)){
+		if (/^\d+(\.\d{1,2})?$/.test(value)) {
 			updatedItems[index][field] = parseFloat(value);
 			//the parseFloat() function to convert the input string to a decimal number
 			setInvoiceItems(updatedItems);
@@ -211,20 +213,22 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 	const showDiscountButton = <button type="button" onClick={toggleAddDiscount}>Add Discount</button>;
 	const discountLabel = (<div className="add__label"><label className='add__label-label'>
 		Discount %:
-		<input type="number" step="any" value={discount} onChange={handleDiscountChange} />
-	</label><label><button className="add__button outline secondary" type="button" onClick={toggleAddDiscount}>x</button></label></div>);
+		<input type="number" step="any" value={discount} onChange={handleDiscountChange} onKeyDown={handleKeyPress} /></label>
+		<label><button className="add__button outline secondary" type="button" onClick={toggleAddDiscount}>x</button></label></div>);
 
 	const showTaxButton = <button type="button" onClick={toggleAddTax}>Add Tax</button>;
 	const taxLabel = (<div className='add__label'><label className='add__label-label'>
 		Tax %:
-		<input type="number" step="any" value={tax} onChange={handleTaxChange} /></label><label><button className="add__button outline secondary" type="button" onClick={toggleAddTax}>x</button></label>
+		<input type="number" step="any" value={tax} onChange={handleTaxChange} onKeyDown={handleKeyPress} /></label>
+		<label><button className="add__button outline secondary" type="button" onClick={toggleAddTax}>x</button></label>
 	</div>);
 
 	const showShippingButton = <button type="button" onClick={toggleAddShipping}>Add Shipping</button>;
 	const shippingLabel = (<div className='add__label'><label className='add__label-label'>
 		Shipping <span>{currency}</span>:
-		<input type="number" step="any" value={shipping} onChange={handleShippingChange} /> </label><label><button className="add__button outline secondary" type="button" onClick={toggleAddShipping}>x</button>
-		</label></div>);
+		<input type="number" step="any" value={shipping} onChange={handleShippingChange} onKeyDown={handleKeyPress} /></label>
+		<label><button className="add__button outline secondary" type="button" onClick={toggleAddShipping}>x</button></label>
+	</div>);
 
 
 	return (
@@ -247,13 +251,16 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 								<div>
 									<label>
 										From:
-										<textarea
+										<textarea style={{ overflow: 'auto', height: '200px' }}
 											id="textarea-from-input"
-											rows={5}
+											rows={50}
 											cols={50}
 											value={senderName}
 											placeholder="required"
-											onChange={handleSenderNameChange} required />
+											onChange={handleSenderNameChange}
+											minLength={2}
+											maxLength={200}
+											required />
 									</label>
 								</div>
 							</div>
@@ -272,12 +279,17 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 								<div>
 									<label>
 										To:
-										<textarea id="textarea-to-input"
-											rows={5}
+										<textarea
+											style={{ overflow: 'auto', height: '200px' }}
+											id="textarea-to-input"
+											rows={50}
 											cols={50}
 											value={recipientName}
 											placeholder="required"
-											onChange={handleRecipientNameChange} required />
+											onChange={handleRecipientNameChange}
+											minLength={2}
+											maxLength={200}
+											required />
 									</label>
 								</div>
 							</div>
@@ -292,11 +304,11 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 								</label>
 								<label>
 									Quantity:
-									<input type="number" step="any" value={item.quantity} onChange={(e) => handleItemChange(index, 'quantity', e.target.value)} />
+									<input type="number" step="any" value={item.quantity} onChange={(e) => handleItemChange(index, 'quantity', e.target.value)} onKeyDown={handleKeyPress} />
 								</label>
 								<label>
 									Price <span>{currency}</span>:
-									<input type="number" step="any" value={item.price} onChange={(e) => handleItemChange(index, 'price', e.target.value)} />
+									<input type="number" step="any" value={item.price} onChange={(e) => handleItemChange(index, 'price', e.target.value)} onKeyDown={handleKeyPress} />
 								</label>
 								<label>
 									Amount <span>{currency}</span>:

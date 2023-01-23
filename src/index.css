@@ -42,7 +42,7 @@
 .invoice__items {
 	display: grid;
 	gap: 5px;
-  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+	grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
 	align-items: end;
 }
 
@@ -53,13 +53,13 @@
 
 .price {
 	display: flex;
-    justify-content: space-between;
+	justify-content: space-between;
 	gap: 50px;
 }
 
-.price > div {
+.price>div {
 	flex: 1;
-  }
+}
 
 .add__label {
 	display: flex;
