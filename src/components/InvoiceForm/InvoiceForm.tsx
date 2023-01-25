@@ -88,6 +88,7 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 			localStorage.setItem('tax', JSON.stringify(tax));
 			localStorage.setItem('shipping', JSON.stringify(shipping));
 			localStorage.setItem('currency', JSON.stringify(currency));
+			localStorage.setItem('invoiceLogoPreview', JSON.stringify(invoiceLogoPreview));
 
 
 			const input = document.getElementById("fileInput") as HTMLInputElement;
@@ -161,13 +162,20 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 			// get the selected file
 			const file = event.target.files[0];
 
+			var reader = new FileReader();
+			reader.onload = function(event) {
+					var res = event.target?.result;
+					//localStorage.setItem("invoiceLogo2", JSON.stringify(res));
+					
+					setInvoiceLogoPreview(res?.valueOf() as string);
+			}
+			reader.readAsDataURL(file)
 			// create a URL for the file
 			const fileUrl = URL.createObjectURL(file);
 
 			// update the invoiceLogo state variable with the file URL
 			setInvoiceLogo(fileUrl);
 			// update the invoiceLogoPreview state variable with the file URL
-			setInvoiceLogoPreview(fileUrl);
 		}
 	}
 
