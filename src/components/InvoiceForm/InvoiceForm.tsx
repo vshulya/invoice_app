@@ -11,6 +11,7 @@ interface Props {
 
 const InvoiceApp: React.FC<Props> = (_props) => {
 	const [invoiceLogo, setInvoiceLogo] = useState('');
+	const [invoiceLogoPreview, setInvoiceLogoPreview] = useState('');
 	const [invoiceNumber, setInvoiceNumber] = useState<number>(1);
 	const [invoiceDate, setInvoiceDate] = useState(new Date());
 	const [invoiceDueDate, setInvoiceDueDate] = useState<Date | null>(null);
@@ -35,7 +36,14 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 
 	const [isFormValid, setIsFormValid] = useState(false);
 
-
+	useEffect(() => {
+		localStorage.getItem('senderName') && setSenderName(JSON.parse(localStorage.getItem('senderName') || ''));
+		localStorage.getItem('recipientName') && setRecipientName(JSON.parse(localStorage.getItem('recipientName') || ''));
+		localStorage.getItem('invoiceItems') && setInvoiceItems(JSON.parse(localStorage.getItem('invoiceItems') || ''));
+		localStorage.getItem('invoiceNote') && setInvoiceNote(JSON.parse(localStorage.getItem('invoiceNote') || ''));
+		localStorage.getItem('invoiceLogo') && setInvoiceLogo(JSON.parse(localStorage.getItem('invoiceLogo') || ''));
+		localStorage.getItem('invoiceNumber') && setInvoiceNumber(JSON.parse(localStorage.getItem('invoiceNumber') || ''));
+	}, []);
 
 	useEffect(() => {
 		setSubtotal(calculateSubtotal(invoiceItems));
@@ -56,6 +64,44 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 			return false;
 		} else {
 			return senderName.trim().length > 0 && recipientName.trim().length > 0;
+		}
+	}
+
+	useEffect(() => {
+		localStorage.getItem('senderName') && setSenderName(JSON.parse(localStorage.getItem('senderName') || ''));
+		localStorage.getItem('recipientName') && setRecipientName(JSON.parse(localStorage.getItem('recipientName') || ''));
+		localStorage.getItem('invoiceItems') && setInvoiceItems(JSON.parse(localStorage.getItem('invoiceItems') || ''));
+		localStorage.getItem('invoiceNote') && setInvoiceNote(JSON.parse(localStorage.getItem('invoiceNote') || ''));
+		localStorage.getItem('invoiceNumber') && setInvoiceNumber(JSON.parse(localStorage.getItem('invoiceNumber') || ''));
+		localStorage.getItem('invoiceLogo') && setInvoiceLogo(JSON.parse(localStorage.getItem('invoiceLogo') || ''));
+		localStorage.getItem('invoiceLogoPreview') && setInvoiceLogoPreview(JSON.parse(localStorage.getItem('invoiceLogoPreview') || ''));
+	}, []);
+
+	const handleSaveLocaleStorage = () => {
+		try {
+			localStorage.setItem('senderName', JSON.stringify(senderName));
+			localStorage.setItem('recipientName', JSON.stringify(recipientName));
+			localStorage.setItem('invoiceItems', JSON.stringify(invoiceItems));
+			localStorage.setItem('invoiceNote', JSON.stringify(invoiceNote));
+			localStorage.setItem('invoiceNumber', JSON.stringify(invoiceNumber));
+			localStorage.setItem('discount', JSON.stringify(discount));
+			localStorage.setItem('tax', JSON.stringify(tax));
+			localStorage.setItem('shipping', JSON.stringify(shipping));
+			localStorage.setItem('currency', JSON.stringify(currency));
+
+
+			const input = document.getElementById("fileInput") as HTMLInputElement;
+			if (input && input.files && input.files.length > 0) {
+				const file = input.files[0];
+				const reader = new FileReader();
+				reader.onload = () => {
+					localStorage.setItem("invoiceLogo", JSON.stringify(reader.result));
+				};
+				reader.readAsDataURL(file);
+			}
+
+		} catch (err) {
+			console.error(err);
 		}
 	}
 
@@ -82,15 +128,6 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 		calculatedTotal = parseFloat(calculatedTotal.toFixed(2));
 		setTotal(calculatedTotal)
 	}
-
-	// const handleDiscountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-	// 	const value = e.target.value;
-	// 	// check if value is a valid decimal
-	// 	if (value === "" || (/^\d+(\.\d{1,2})?$/.test(value))) {
-	// 		//the parseFloat() function to convert the input string to a decimal number
-	// 		setDiscount(parseFloat(value));
-	// 	}
-	// }
 
 	const handleDiscountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const value = e.target.value;
@@ -129,6 +166,8 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 
 			// update the invoiceLogo state variable with the file URL
 			setInvoiceLogo(fileUrl);
+			// update the invoiceLogoPreview state variable with the file URL
+			setInvoiceLogoPreview(fileUrl);
 		}
 	}
 
@@ -244,8 +283,9 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 									<div className='invoice__logo'>
 										<label htmlFor="invoice__logo">Add your logo
 											<div className="invoice__logo-view">
-												<input type="file" name="logo" accept="image/png, image/jpeg" onChange={handleLogoChange} /></div>
+												<input type="file" id="fileInput" name="logo" accept="image/png, image/jpeg" onChange={handleLogoChange} /></div>
 										</label>
+										{invoiceLogoPreview &&  <img src={invoiceLogoPreview} alt="logo" /> }
 									</div>
 								</div>
 								<div>
@@ -368,7 +408,7 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 					currency={currency}
 
 				/>}>
-				{({ loading }) => (loading ? <button>'Loading document...'</button> : <button type="submit">Download invoice</button>)}
+				{({ loading }) => (loading ? <button>'Loading document...'</button> : <button onClick={handleSaveLocaleStorage} type="submit">Download invoice</button>)}
 				{/* todo not sure about Loading document... */}
 			</PDFDownloadLink> : <button disabled>Download invoice</button>}
 		</main >
