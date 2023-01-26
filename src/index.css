@@ -45,6 +45,7 @@ position: relative;
 	border: var(--border-width) solid var(--border-color);
 	border-radius: var(--border-radius);
 	outline: 0;
+	/* opacity: .5; */
 }
 
 .date-picker {

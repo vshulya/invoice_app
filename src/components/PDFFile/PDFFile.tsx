@@ -180,18 +180,19 @@ function PDFFile(props: {
           </View>
           <View style={styles.block}>
             <View style={styles.container}>
-              <View style={[styles.columnHeader, { marginRight: 10 }]}><Text style={styles.line}>From: <Text style={styles.data}>{props.senderName}</Text></Text></View>
-              <View style={styles.columnHeader}><Text style={styles.line}>To: <Text style={styles.data}>{props.recipientName}</Text></Text></View>
+              <Text style={styles.line}>From: <Text style={styles.data}>{props.senderName}</Text></Text>
+              <View style={[{width: 10}]}></View>
+              <Text style={styles.line}>To: <Text style={styles.data}>{props.recipientName}</Text></Text>
             </View>
           </View>
 
           <View style={styles.block}>
 
-              <View style={styles.tableRow}>
-                <Text style={{ ...styles.tableCellNameTitle, flex: 2 }}>Name</Text>
-                <Text style={styles.tableCellTitle}>Quantity</Text>
-                <Text style={styles.tableCellTitle}>Price</Text>
-                <Text style={styles.tableCellTitle}>Amount</Text>
+            <View style={styles.tableRow}>
+              <Text style={{ ...styles.tableCellNameTitle, flex: 2 }}>Name</Text>
+              <Text style={styles.tableCellTitle}>Quantity</Text>
+              <Text style={styles.tableCellTitle}>Price</Text>
+              <Text style={styles.tableCellTitle}>Amount</Text>
             </View>
             {props.invoiceItems.map((item, index) => (
               <View key={index} style={styles.tableRow}>

@@ -67,54 +67,6 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 		}
 	}
 
-	// const handleSaveLocaleStorage = () => {
-	// 	try {
-	// 		const data = {
-	// 			senderName,
-	// 			recipientName,
-	// 			invoiceItems,
-	// 			invoiceNote,
-	// 			invoiceNumber,
-	// 			discount: discount || null,
-	// 			tax: tax || null,
-	// 			shipping: shipping || null,
-	// 			currency,
-	// 			invoiceLogoPreview
-	// 		}
-
-	// 		const input = document.getElementById("fileInput") as HTMLInputElement;
-	// 		if (input && input.files && input.files.length > 0) {
-	// 			const file = input.files[0];
-	// 			const reader = new FileReader();
-	// 			reader.onload = () => {
-	// 				localStorage.setItem("invoiceLogo", JSON.stringify(reader.result));
-	// 			};
-	// 			reader.readAsDataURL(file);
-	// 		}
-
-	// 	} catch (err) {
-	// 		console.error(err);
-	// 	}
-	// }
-
-	// useEffect(() => {
-	// 	const data = JSON.parse(localStorage.getItem('data') || '{}');
-	// 	setSenderName(data.senderName || '');
-	// 	setRecipientName(data.recipientName || '');
-	// 	setInvoiceItems(data.invoiceItems || '');
-	// 	setInvoiceNote(data.invoiceNote || '');
-	// 	setInvoiceNumber(data.invoiceNumber || '');
-	// 	setInvoiceLogo(data.invoiceLogo || '');
-	// 	setInvoiceLogoPreview(data.invoiceLogoPreview || '');
-	// 	setInvoiceDate(data.invoiceDate || '');
-	// 	setShowDiscount(data.showDiscount || '');
-	// 	setTax(data.tax || '');
-	// 	setShowTax(data.showTax || false);
-	// 	setDiscount(data.discount || '');
-	// 	setShipping(data.shipping || '');
-	// 	setShowShipping(data.showShipping || false);
-	// }, []);
-
 	useEffect(() => {
 		localStorage.getItem('senderName') && setSenderName(JSON.parse(localStorage.getItem('senderName') || ''));
 		localStorage.getItem('recipientName') && setRecipientName(JSON.parse(localStorage.getItem('recipientName') || ''));
@@ -123,20 +75,18 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 		localStorage.getItem('invoiceNumber') && setInvoiceNumber(JSON.parse(localStorage.getItem('invoiceNumber') || ''));
 		localStorage.getItem('invoiceLogo') && setInvoiceLogo(JSON.parse(localStorage.getItem('invoiceLogo') || ''));
 		localStorage.getItem('invoiceLogoPreview') && setInvoiceLogoPreview(JSON.parse(localStorage.getItem('invoiceLogoPreview') || ''));
-		localStorage.getItem('invoiceDate') && setInvoiceDate(JSON.parse(localStorage.getItem('invoiceDate') || ''));
-		localStorage.getItem('showDiscount') && setShowDiscount(JSON.parse(localStorage.getItem('showDiscount') || ''));
-
-		const taxData = localStorage.getItem('tax');
-		if (taxData !== null && taxData !== undefined) {
-			setShowTax(true);
-			localStorage.getItem('tax') && setTax(JSON.parse(localStorage.getItem('tax') || ''));
-		}
 
 		const discountData = localStorage.getItem('discount');
 		if (discountData !== null && discountData !== undefined) {
 			setShowDiscount(true);
 			localStorage.getItem('discount') && setDiscount(JSON.parse(localStorage.getItem('discount') || ''));
 		};
+
+		const taxData = localStorage.getItem('tax');
+		if (taxData !== null && taxData !== undefined) {
+			setShowTax(true);
+			localStorage.getItem('tax') && setTax(JSON.parse(localStorage.getItem('tax') || ''));
+		} 
 
 		const shippingData = localStorage.getItem('shipping');
 		if (shippingData !== null && shippingData !== undefined) {
@@ -154,11 +104,18 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 			localStorage.setItem('invoiceItems', JSON.stringify(invoiceItems));
 			localStorage.setItem('invoiceNote', JSON.stringify(invoiceNote));
 			localStorage.setItem('invoiceNumber', JSON.stringify(invoiceNumber));
-			localStorage.setItem('discount', discount ? JSON.stringify(discount) : '');
-			localStorage.setItem('tax', tax ? JSON.stringify(tax) : '');
-			localStorage.setItem('shipping', shipping ? JSON.stringify(shipping) : '');
 			localStorage.setItem('currency', JSON.stringify(currency));
 			localStorage.setItem('invoiceLogoPreview', JSON.stringify(invoiceLogoPreview));
+
+			if (showDiscount) {
+				localStorage.setItem('discount', JSON.stringify(discount));
+			};
+			 if (showTax) {
+				localStorage.setItem('tax', JSON.stringify(tax));
+			};
+			 if (showShipping) {
+				localStorage.setItem('shipping', JSON.stringify(shipping));
+			};
 
 
 			const input = document.getElementById("fileInput") as HTMLInputElement;
@@ -214,18 +171,19 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 		setTotal(calculatedTotal)
 	}
 
+	// to remove last digit from input
+	const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+		if ((e.key === 'Backspace' || e.key === 'Delete') && e.currentTarget.value.endsWith('0')) {
+			e.currentTarget.value = e.currentTarget.value.slice(0, -1);
+		}
+	}
+
 	const handleDiscountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const value = e.target.value;
 		if (value === "" || !isNaN(value as any)) {
 			setDiscount(value === "" ? 0 : parseFloat(value));
 		}
 	};
-
-	const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-		if ((e.key === 'Backspace' || e.key === 'Delete') && e.currentTarget.value.endsWith('0')) {
-			e.currentTarget.value = e.currentTarget.value.slice(0, -1);
-		}
-	}
 
 	const handleTaxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const value = e.target.value;
@@ -303,17 +261,12 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 
 	const handleItemChange = (index: number, field: keyof { quantity: number; price: number }, value: string) => {
 		const updatedItems = [...invoiceItems];
-
-		//setInvoiceItems(updatedItems);
-
-		// check if value is a valid decimal
-		if (/^\d+(\.\d{1,2})?$/.test(value)) {
-			updatedItems[index][field] = parseFloat(value);
+		if (value === "" || !isNaN(value as any)){
 			//the parseFloat() function to convert the input string to a decimal number
+			updatedItems[index][field] = value === "" ? 0 : parseFloat(value);
 			setInvoiceItems(updatedItems);
 		};
 	};
-
 
 	const handleNameChange = (index: number, value: string) => {
 		const updatedItems = [...invoiceItems];
@@ -326,6 +279,9 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 		const updatedItems = [...invoiceItems];
 		updatedItems.splice(index, 1);
 		setInvoiceItems(updatedItems);
+		localStorage.removeItem('invoiceItems');
+    localStorage.setItem('invoiceItems', JSON.stringify(updatedItems));
+		//TODO I need to remove the item from the local storage
 	};
 
 	const handleInvoiceNoteChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -406,11 +362,11 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 							<div className='invoice__info-row'>
 								<div>
 									<div className="invoice__logo">
-										<label htmlFor="invoice__logo">Add your logo
+										<label htmlFor="invoice__logo">{!invoiceLogoPreview ? 
 											<div className="invoice__logo-view">
 												<input type="file" id="fileInput" name="logo" accept="image/png, image/jpeg" onChange={handleLogoChange} style={{ display: 'none' }} />
 												<button onClick={handleLogoAdd}>Add your logo</button>
-											</div>
+											</div> : null}
 										</label>
 										<div className="invoice__logo-preview">
 											{invoiceLogoPreview && <img className="invoice__logo-preview-img" src={invoiceLogoPreview} alt="logo" />}
