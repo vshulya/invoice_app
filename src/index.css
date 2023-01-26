@@ -15,15 +15,36 @@
 	justify-content: space-between;
 }
 
-.invoice__logo-view {
+/* .invoice__logo-view {
 	width: 200px;
-	height: 200px;
 	border: var(--border-width) solid var(--border-color);
 	border-radius: var(--border-radius);
 	outline: 0;
 	--background-color: var(--form-element-background-color);
 	--border-color: var(--form-element-border-color);
 	display: flex;
+} */
+.invoice__logo-preview {
+position: relative;
+}
+
+.invoice__logo-preview-img {
+	max-width: 150px;
+	max-height: 150px;
+	height: 100%;
+	width: 100%;
+	object-fit: cover;
+}
+
+.remove__button {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 50px;
+	background-color: var(--form-element-background-color);
+	border: var(--border-width) solid var(--border-color);
+	border-radius: var(--border-radius);
+	outline: 0;
 }
 
 .date-picker {
