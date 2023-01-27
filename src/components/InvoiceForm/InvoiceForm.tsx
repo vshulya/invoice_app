@@ -23,6 +23,8 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 
 	const [subtotal, setSubtotal] = useState(0);
 	const [discount, setDiscount] = useState<number>(0);
+	const [discountType, setDiscountType] = useState<string>("percentage");
+	// const options = ["percentage", "flat"];
 	const [tax, setTax] = useState<number>(0);
 	const [shipping, setShipping] = useState<number>(0);
 	const [total, setTotal] = useState(0);
@@ -36,24 +38,8 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 
 	const [isFormValid, setIsFormValid] = useState(false);
 
-	useEffect(() => {
-		localStorage.getItem('senderName') && setSenderName(JSON.parse(localStorage.getItem('senderName') || ''));
-		localStorage.getItem('recipientName') && setRecipientName(JSON.parse(localStorage.getItem('recipientName') || ''));
-		localStorage.getItem('invoiceItems') && setInvoiceItems(JSON.parse(localStorage.getItem('invoiceItems') || ''));
-		localStorage.getItem('invoiceNote') && setInvoiceNote(JSON.parse(localStorage.getItem('invoiceNote') || ''));
-		localStorage.getItem('invoiceLogo') && setInvoiceLogo(JSON.parse(localStorage.getItem('invoiceLogo') || ''));
-		localStorage.getItem('invoiceNumber') && setInvoiceNumber(JSON.parse(localStorage.getItem('invoiceNumber') || ''));
-	}, []);
 
-	useEffect(() => {
-		setSubtotal(calculateSubtotal(invoiceItems));
-	}, [invoiceItems]);
-
-	useEffect(() => {
-		// Call calculateAndSetTotal() function here
-		calculateAndSetTotal(subtotal, discount, tax, shipping);
-	}, [subtotal, discount, tax, shipping]);
-
+	//Validation for the form
 	useEffect(() => {
 		setIsFormValid(validateForm());
 	}, [senderName, recipientName]);
@@ -66,6 +52,23 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 			return senderName.trim().length > 0 && recipientName.trim().length > 0;
 		}
 	}
+
+	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+		if (validateForm()) {
+			setIsFormValid(true);
+		}
+	};
+
+	//Local storage part
+	useEffect(() => {
+		localStorage.getItem('senderName') && setSenderName(JSON.parse(localStorage.getItem('senderName') || ''));
+		localStorage.getItem('recipientName') && setRecipientName(JSON.parse(localStorage.getItem('recipientName') || ''));
+		localStorage.getItem('invoiceItems') && setInvoiceItems(JSON.parse(localStorage.getItem('invoiceItems') || ''));
+		localStorage.getItem('invoiceNote') && setInvoiceNote(JSON.parse(localStorage.getItem('invoiceNote') || ''));
+		localStorage.getItem('invoiceLogo') && setInvoiceLogo(JSON.parse(localStorage.getItem('invoiceLogo') || ''));
+		localStorage.getItem('invoiceNumber') && setInvoiceNumber(JSON.parse(localStorage.getItem('invoiceNumber') || ''));
+	}, []);
 
 	useEffect(() => {
 		localStorage.getItem('senderName') && setSenderName(JSON.parse(localStorage.getItem('senderName') || ''));
@@ -80,13 +83,14 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 		if (discountData !== null && discountData !== undefined) {
 			setShowDiscount(true);
 			localStorage.getItem('discount') && setDiscount(JSON.parse(localStorage.getItem('discount') || ''));
+			localStorage.getItem('discountType') && setDiscountType(JSON.parse(localStorage.getItem('discountType') || ''));
 		};
 
 		const taxData = localStorage.getItem('tax');
 		if (taxData !== null && taxData !== undefined) {
 			setShowTax(true);
 			localStorage.getItem('tax') && setTax(JSON.parse(localStorage.getItem('tax') || ''));
-		} 
+		}
 
 		const shippingData = localStorage.getItem('shipping');
 		if (shippingData !== null && shippingData !== undefined) {
@@ -109,11 +113,12 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 
 			if (showDiscount) {
 				localStorage.setItem('discount', JSON.stringify(discount));
+				localStorage.setItem('discountType', JSON.stringify(discountType));
 			};
-			 if (showTax) {
+			if (showTax) {
 				localStorage.setItem('tax', JSON.stringify(tax));
 			};
-			 if (showShipping) {
+			if (showShipping) {
 				localStorage.setItem('shipping', JSON.stringify(shipping));
 			};
 
@@ -140,6 +145,7 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 		localStorage.removeItem('invoiceNote');
 		localStorage.removeItem('invoiceNumber');
 		localStorage.removeItem('discount');
+		localStorage.removeItem('discountType');
 		localStorage.removeItem('tax');
 		localStorage.removeItem('shipping');
 		localStorage.removeItem('currency');
@@ -147,12 +153,15 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 		localStorage.removeItem('invoiceLogoPreview');
 	};
 
-	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-		e.preventDefault();
-		if (validateForm()) {
-			setIsFormValid(true);
-		}
-	};
+	//Calculation part
+	useEffect(() => {
+		setSubtotal(calculateSubtotal(invoiceItems));
+	}, [invoiceItems]);
+
+	useEffect(() => {
+		// Call calculateAndSetTotal() function here
+		calculateAndSetTotal(subtotal, discount, tax, shipping);
+	}, [subtotal, discount, tax, shipping, discountType]);
 
 
 	function calculateSubtotal(invoiceItems: { name: string, quantity: number, price: number }[]) {
@@ -166,18 +175,19 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 	}
 
 	function calculateAndSetTotal(subtotal: number, discount: number, tax: number, shipping: number) {
-		let calculatedTotal = (subtotal * (1 - (discount / 100))) + ((subtotal * (1 - (discount / 100))) * (tax / 100)) + shipping;
-		calculatedTotal = parseFloat(calculatedTotal.toFixed(2));
-		setTotal(calculatedTotal)
-	}
-
-	// to remove last digit from input
-	const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-		if ((e.key === 'Backspace' || e.key === 'Delete') && e.currentTarget.value.endsWith('0')) {
-			e.currentTarget.value = e.currentTarget.value.slice(0, -1);
+		if (discountType === 'percentage') {
+			let calculatedTotal = (subtotal * (1 - (discount / 100))) + ((subtotal * (1 - (discount / 100))) * (tax / 100)) + shipping;
+			calculatedTotal = parseFloat(calculatedTotal.toFixed(2));
+			setTotal(calculatedTotal)
+		} else if (discountType === 'flat') {
+			let calculatedTotal = (subtotal - discount) + ((subtotal - discount) * (tax / 100)) + shipping;
+			calculatedTotal = parseFloat(calculatedTotal.toFixed(2));
+			setTotal(calculatedTotal)
 		}
 	}
 
+
+	//Changing inputs part
 	const handleDiscountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const value = e.target.value;
 		if (value === "" || !isNaN(value as any)) {
@@ -196,6 +206,13 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 		const value = e.target.value;
 		if (value === "" || !isNaN(value as any)) {
 			setShipping(value === "" ? 0 : parseFloat(value));
+		}
+	}
+
+	// to remove last digit from input
+	const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+		if ((e.key === 'Backspace' || e.key === 'Delete') && e.currentTarget.value.endsWith('0')) {
+			e.currentTarget.value = e.currentTarget.value.slice(0, -1);
 		}
 	}
 
@@ -235,15 +252,30 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 	};
 
 	const handleInvoiceNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		setInvoiceNumber(parseInt(e.target.value, 10));
+		const value = e.target.value;
+		if (value !== "" && !isNaN(value as any)) {
+			setInvoiceNumber(parseInt(value, 10));
+		} else {
+			setInvoiceNumber(1);
+		}
 	};
 
 	const handleInvoiceDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		setInvoiceDate(new Date(e.target.value));
+		const date = new Date(e.target.value);
+		if (!isNaN(date.getTime())) {
+			setInvoiceDate(date);
+		} else {
+			setInvoiceDate(new Date());
+		}
 	};
 
 	const handleInvoiceDueDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		setInvoiceDueDate(new Date(e.target.value));
+		const date = new Date(e.target.value);
+		if (!isNaN(date.getTime())) {
+			setInvoiceDueDate(date);
+		} else {
+			setInvoiceDueDate(new Date());
+		}
 	};
 
 	const handleSenderNameChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -261,7 +293,7 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 
 	const handleItemChange = (index: number, field: keyof { quantity: number; price: number }, value: string) => {
 		const updatedItems = [...invoiceItems];
-		if (value === "" || !isNaN(value as any)){
+		if (value === "" || !isNaN(value as any)) {
 			//the parseFloat() function to convert the input string to a decimal number
 			updatedItems[index][field] = value === "" ? 0 : parseFloat(value);
 			setInvoiceItems(updatedItems);
@@ -279,9 +311,6 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 		const updatedItems = [...invoiceItems];
 		updatedItems.splice(index, 1);
 		setInvoiceItems(updatedItems);
-		localStorage.removeItem('invoiceItems');
-    localStorage.setItem('invoiceItems', JSON.stringify(updatedItems));
-		//TODO I need to remove the item from the local storage
 	};
 
 	const handleInvoiceNoteChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -310,24 +339,41 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 		)}
 	</label>);
 
-// const handleDiscountBlur = (event: { target: { value: string; }; }) => {
-//   if(event.target.value === '' || event.target.value === '0'){
-// 		console.log(discount);
-//     setDiscount(0);
-//   }
-// }
+	// Function to handle change in checked state of radio
+	const handleRadioChange = (event: { target: { value: React.SetStateAction<string>; }; }) => {
+		setDiscountType(event.target.value);
+	}
 
+	// const handleSelectChange = (event: { target: { value: React.SetStateAction<string>; }; }) => {
+	// 	setDiscountType(event.target.value);
+	// }
 
 	const showDiscountButton = <button type="button" onClick={toggleAddDiscount}>Add Discount</button>;
 	const discountLabel = (<div className="add__label"><label className='add__label-label'>
-		Discount %:
-		<input type="number" step="any" value={discount} onChange={handleDiscountChange} onKeyDown={handleKeyPress}/></label>
+		Discount:
+		{/* Render the select
+<select value={discountType} onChange={handleSelectChange}>
+    {options.map((option) => (
+        <option value={option} key={option}>
+            {option}
+        </option>
+    ))}
+</select> */}
+		<label>
+			<input type="radio" value="percentage" checked={discountType === "percentage"} onChange={handleRadioChange} />
+			%
+		</label>
+		<label>
+			<input type="radio" value="flat" checked={discountType === "flat"} onChange={handleRadioChange} />
+			{currency}
+		</label>
+		<input type="number" step="any" value={discount} onChange={handleDiscountChange} onKeyDown={handleKeyPress} /></label>
 		<label><button className="add__button outline secondary" type="button" onClick={toggleAddDiscount}>x</button></label></div>);
 
 	const showTaxButton = <button type="button" onClick={toggleAddTax}>Add Tax</button>;
 	const taxLabel = (<div className='add__label'><label className='add__label-label'>
 		Tax %:
-		<input type="number" step="any" value={tax} onChange={handleTaxChange} onKeyDown={handleKeyPress}/></label>
+		<input type="number" step="any" value={tax} onChange={handleTaxChange} onKeyDown={handleKeyPress} /></label>
 		<label><button className="add__button outline secondary" type="button" onClick={toggleAddTax}>x</button></label>
 	</div>);
 
@@ -370,7 +416,7 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 							<div className='invoice__info-row'>
 								<div>
 									<div className="invoice__logo">
-										<label htmlFor="invoice__logo">{!invoiceLogoPreview ? 
+										<label htmlFor="invoice__logo">{!invoiceLogoPreview ?
 											<div className="invoice__logo-view">
 												<input type="file" id="fileInput" name="logo" accept="image/png, image/jpeg" onChange={handleLogoChange} style={{ display: 'none' }} />
 												<button onClick={handleLogoAdd}>Add your logo</button>
@@ -385,7 +431,9 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 								<div>
 									<label>
 										From:
-										<textarea style={{ overflow: 'auto', height: '200px' }}
+										<textarea
+											className='invoice__info-fromto'
+											style={{ overflow: 'auto', height: '200px' }}
 											id="textarea-from-input"
 											rows={50}
 											cols={50}
@@ -414,6 +462,7 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 									<label>
 										To:
 										<textarea
+											className='invoice__info-fromto'
 											style={{ overflow: 'auto', height: '200px' }}
 											id="textarea-to-input"
 											rows={50}
@@ -435,7 +484,7 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 							<div className='invoice__items' key={index}>
 								<label>
 									Name:
-									<textarea className='invoice__item-name' value={item.name} onChange={(e) => handleNameChange(index, e.target.value)} maxLength={200}/>
+									<textarea className='invoice__item-name' value={item.name} onChange={(e) => handleNameChange(index, e.target.value)} maxLength={200} />
 								</label>
 								<label>
 									Quantity:
@@ -497,6 +546,7 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 
 					subtotal={subtotal}
 					discount={discount}
+					discountType={discountType}
 					tax={tax}
 					shipping={shipping}
 					total={total}
@@ -513,4 +563,3 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 };
 
 export default InvoiceApp;
-
