@@ -9,6 +9,12 @@
 	gap: 50px;
 }
 
+.invoice__info-fromto {
+	overflow: hidden;
+	height: '200px';
+	resize: vertical;
+}
+
 .invoice__info-row {
 	display: flex;
 	flex-direction: column;
@@ -65,7 +71,18 @@ position: relative;
 	display: grid;
 	gap: 5px;
 	grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
-	align-items: end;
+}
+
+.invoice__item-name {
+	height: calc(1rem * var(--line-height) + var(--form-element-spacing-vertical) * 2 + var(--border-width) * 2);
+	/* resize: none; */
+	/* overflow: 'auto'; */
+	overflow: hidden;
+	resize: vertical;
+}
+
+.invoice__item-remove {
+	color: var(--card-background-color);
 }
 
 .invoice__item-button {

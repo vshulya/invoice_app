@@ -300,6 +300,7 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 
 	const toggleAddShipping = () => setShowShipping(!showShipping);
 
+
 	// additional labels 
 	const showDueDateButton = <button type="button" onClick={handleAddDueTo}>Add Due to</button>;
 	const dueDateToLabel = (<label>
@@ -309,17 +310,24 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 		)}
 	</label>);
 
+// const handleDiscountBlur = (event: { target: { value: string; }; }) => {
+//   if(event.target.value === '' || event.target.value === '0'){
+// 		console.log(discount);
+//     setDiscount(0);
+//   }
+// }
+
 
 	const showDiscountButton = <button type="button" onClick={toggleAddDiscount}>Add Discount</button>;
 	const discountLabel = (<div className="add__label"><label className='add__label-label'>
 		Discount %:
-		<input type="number" step="any" value={discount} onChange={handleDiscountChange} onKeyDown={handleKeyPress} /></label>
+		<input type="number" step="any" value={discount} onChange={handleDiscountChange} onKeyDown={handleKeyPress}/></label>
 		<label><button className="add__button outline secondary" type="button" onClick={toggleAddDiscount}>x</button></label></div>);
 
 	const showTaxButton = <button type="button" onClick={toggleAddTax}>Add Tax</button>;
 	const taxLabel = (<div className='add__label'><label className='add__label-label'>
 		Tax %:
-		<input type="number" step="any" value={tax} onChange={handleTaxChange} onKeyDown={handleKeyPress} /></label>
+		<input type="number" step="any" value={tax} onChange={handleTaxChange} onKeyDown={handleKeyPress}/></label>
 		<label><button className="add__button outline secondary" type="button" onClick={toggleAddTax}>x</button></label>
 	</div>);
 
@@ -421,12 +429,13 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 							</div>
 						</section>
 						<br />
+
 						<h3>Invoice items:</h3>
 						{invoiceItems.map((item, index) => (
 							<div className='invoice__items' key={index}>
-								<label className='invoice__item'>
+								<label>
 									Name:
-									<input type="text" value={item.name} onChange={(e) => handleNameChange(index, e.target.value)} />
+									<textarea className='invoice__item-name' value={item.name} onChange={(e) => handleNameChange(index, e.target.value)} maxLength={200}/>
 								</label>
 								<label>
 									Quantity:
@@ -440,7 +449,8 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 									Amount <span>{currency}</span>:
 									<input type="text" value={(item.price * item.quantity).toFixed(2)} readOnly />
 								</label>
-								<label>
+								{/* TODO something more elegant */}
+								<label className='invoice__item-remove'>Remove Item
 									<button className='invoice__item-button' type="button" onClick={() => handleRemoveItem(index)}>Remove</button>
 								</label>
 							</div>
