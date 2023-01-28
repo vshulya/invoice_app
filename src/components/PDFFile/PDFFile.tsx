@@ -6,7 +6,7 @@ Font.register({
   family: 'Roboto',
   fonts: [
     {
-      src: 'http://fonts.gstatic.com/s/roboto/v30/KFOmCnqEu92Fr1Me5WZLCzYlKw.ttf',
+      src: 'https://fonts.gstatic.com/s/roboto/v30/KFOmCnqEu92Fr1Me5WZLCzYlKw.ttf',
     },
   ],
 });
