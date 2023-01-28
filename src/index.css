@@ -5,8 +5,17 @@
 
 .invoice__info {
 	display: flex;
+	flex-direction: column;
+}
+
+.invoice__info-section {
+	display: flex;
 	justify-content: space-between;
 	gap: 50px;
+}
+
+.invoice__info-subsection {
+	flex: 1;
 }
 
 .invoice__info-fromto {
@@ -15,23 +24,8 @@
 	resize: vertical;
 }
 
-.invoice__info-row {
-	display: flex;
-	flex-direction: column;
-	justify-content: space-between;
-}
-
-/* .invoice__logo-view {
-	width: 200px;
-	border: var(--border-width) solid var(--border-color);
-	border-radius: var(--border-radius);
-	outline: 0;
-	--background-color: var(--form-element-background-color);
-	--border-color: var(--form-element-border-color);
-	display: flex;
-} */
 .invoice__logo-preview {
-position: relative;
+	position: relative;
 }
 
 .invoice__logo-preview-img {
@@ -115,4 +109,23 @@ position: relative;
 
 .add__label-label {
 	width: 100%;
+}
+
+@media screen and (max-width: 540px) {
+	.invoice__info-section {
+		flex-direction: column;
+	}
+}
+
+@media screen and (max-width: 540px) {
+	.invoice__items {
+		display: flex;
+		flex-direction: column;
+	}
+}
+
+@media screen and (max-width: 540px) {
+	.price {
+		flex-direction: column-reverse;
+	}
 }
