@@ -42,6 +42,11 @@ position: relative;
 	object-fit: cover;
 }
 
+.invoice__logo-error {
+	color: red;
+	opacity: .7;
+}
+
 .remove__button {
 	position: absolute;
 	top: 0;
