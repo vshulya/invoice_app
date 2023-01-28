@@ -563,7 +563,7 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 							currency={currency}
 
 						/>}>
-					{({ loading }) => (loading ? <button>'Loading document...'</button> : <button onClick={handleSaveLocaleStorage} type="submit">Download invoice</button>)}
+					{({ loading }) => (loading ? <button>Loading document...</button> : <button onClick={handleSaveLocaleStorage} type="submit">Download invoice</button>)}
 					{/* todo not sure about Loading document... */}
 				</PDFDownloadLink > : <button disabled>Download invoice</button>}
 			<button onClick={handleFormReset}>Reset form</button>
