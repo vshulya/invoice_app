@@ -153,7 +153,11 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 		return subtotal = parseFloat(subtotal.toFixed(2));;
 	}
 
+
 	function calculateAndSetTotal(subtotal: number, discount: string, tax: string, shipping: string) {
+		if (discount === '') discount = '0';
+		if (tax === '') tax = '0';
+		if (shipping === '') shipping = '0';
 		if (discountType === 'percentage') {
 			let calculatedTotal = (subtotal * (1 - (parseFloat(discount) / 100))) + ((subtotal * (1 - (parseFloat(discount) / 100))) * (parseFloat(tax) / 100)) + parseFloat(shipping);
 			calculatedTotal = parseFloat(calculatedTotal.toFixed(2));
@@ -164,19 +168,6 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 			setTotal(calculatedTotal)
 		}
 	}
-
-	// function calculateAndSetTotal(subtotal: number, discount: string, tax: string, shipping: string) {
-	// 	if (discountType === 'percentage') {
-	// 		let calculatedTotal = (subtotal * (1 - (parseFloat(discount) / 100))) + ((subtotal * (1 - (parseFloat(discount) / 100))) * (parseFloat(tax) / 100)) + parseFloat(shipping);
-	// 		calculatedTotal = parseFloat(calculatedTotal.toFixed(2));
-	// 		setTotal(calculatedTotal)
-	// 	} else if (discountType === 'flat') {
-	// 		let calculatedTotal = (subtotal - parseFloat(discount)) + ((subtotal - parseFloat(discount)) * (parseFloat(tax) / 100)) + parseFloat(shipping);
-	// 		calculatedTotal = parseFloat(calculatedTotal.toFixed(2));
-	// 		setTotal(calculatedTotal)
-	// 	}
-	// }
-
 
 	//Changing inputs part
 	const handleDiscountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -277,7 +268,7 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 	};
 
 	const handleAddItem = () => {
-		const newItem = { name: '', quantity: '', price: '' };
+		const newItem = { name: '', quantity: '0', price: '0' };
 		setInvoiceItems([...invoiceItems, newItem]);
 	}
 
@@ -378,7 +369,7 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 		<input type="string"
 			value={discount}
 			onChange={handleDiscountChange}
-			onBlur={() => { if (isNaN(parseFloat(tax))) setDiscount('0') }} /></label>
+			onBlur={() => { if (isNaN(parseFloat(discount))) setDiscount('0') }} /></label>
 		<label><button className="add__button outline secondary" type="button" onClick={toggleAddDiscount}>x</button></label></div>);
 
 	const showTaxButton = <button type="button" onClick={toggleAddTax}>Add Tax</button>;
@@ -397,7 +388,7 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 		<input type="string"
 			value={shipping}
 			onChange={handleShippingChange}
-			onBlur={() => { if (isNaN(parseFloat(tax))) setShipping('0') }} /></label>
+			onBlur={() => { if (isNaN(parseFloat(shipping))) setShipping('0') }} /></label>
 		<label><button className="add__button outline secondary" type="button" onClick={toggleAddShipping}>x</button></label>
 	</div>);
 
