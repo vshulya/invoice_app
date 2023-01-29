@@ -145,13 +145,13 @@ function PDFFile(props: {
   invoiceDueDate: Date | null;
   senderName: string;
   recipientName: string;
-  invoiceItems: { name: string, quantity: number, price: number }[];
+  invoiceItems: { name: string, quantity: string, price: string }[];
   invoiceNote: string;
   subtotal: number;
-  discount: number;
+  discount: string;
   discountType: string;
-  tax: number;
-  shipping: number,
+  tax: string;
+  shipping: string,
   total: number,
   currency: string
 }) {
@@ -192,15 +192,15 @@ function PDFFile(props: {
             <View style={styles.tableRow}>
               <Text style={{ ...styles.tableCellNameTitle, flex: 2 }}>Name</Text>
               <Text style={styles.tableCellTitle}>Quantity</Text>
-              <Text style={styles.tableCellTitle}>Price</Text>
-              <Text style={styles.tableCellTitle}>Amount</Text>
+              <Text style={styles.tableCellTitle}>{props.currency}Price</Text>
+              <Text style={styles.tableCellTitle}>{props.currency}Amount</Text>
             </View>
             {props.invoiceItems.map((item, index) => (
               <View key={index} style={styles.tableRow}>
                 <Text style={{ ...styles.tableCellName, flex: 2 }}>{item.name}</Text>
                 <Text style={styles.tableCell}><Text style={styles.data}>{item.quantity}</Text></Text>
-                <Text style={styles.tableCell}><Text style={styles.data}>{props.currency}{item.price}</Text></Text>
-                <Text style={styles.tableCell}><Text style={styles.data}>{props.currency}{(item.price * item.quantity).toFixed(2)}</Text></Text>
+                <Text style={styles.tableCell}><Text style={styles.data}>{item.price}</Text></Text>
+                <Text style={styles.tableCell}><Text style={styles.data}>{(parseFloat(item.price) * parseFloat(item.quantity)).toFixed(2)}</Text></Text>
               </View>
             ))}
 
@@ -211,10 +211,10 @@ function PDFFile(props: {
 
                 <View style={styles.price}>
                   <Text style={styles.line}>Subtotal: </Text> <Text style={styles.data}>{props.currency}{props.subtotal}</Text>
-                  {props.discount !== 0 && <><Text style={styles.line}>Discount: </Text><Text style={styles.data}>{props.discountType === "percentage" && <>%</>}
+                  {props.discount !== "0" && <><Text style={styles.line}>Discount: </Text><Text style={styles.data}>{props.discountType === "percentage" && <>%</>}
 {props.discountType === "flat" && <>{props.currency}</>}{props.discount}</Text></>}
-                  {props.tax !== 0 && <><Text style={styles.line}>Tax: </Text><Text style={styles.data}>{props.tax}%</Text></>}
-                  {props.shipping !== 0 && <><Text style={styles.line}>Shipping: </Text><Text style={styles.data}>{props.currency}{props.shipping}</Text></>}
+                  {props.tax !== "0" && <><Text style={styles.line}>Tax: </Text><Text style={styles.data}>%{props.tax}</Text></>}
+                  {props.shipping !== "0" && <><Text style={styles.line}>Shipping: </Text><Text style={styles.data}>{props.currency}{props.shipping}</Text></>}
                   <Text style={[styles.line, styles.lineTotal]}>Total: </Text> <Text style={[styles.data, styles.lineTotalData]}>{props.currency}{props.total}</Text>
                 </View>
 
