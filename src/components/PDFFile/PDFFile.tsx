@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
 
 function PDFFile(props: {
   invoiceLogo: string;
-  invoiceNumber: number;
+  invoiceNumber: string;
   invoiceDate: Date;
   invoiceDueDate: Date | null;
   senderName: string;
@@ -192,14 +192,14 @@ function PDFFile(props: {
             <View style={styles.tableRow}>
               <Text style={{ ...styles.tableCellNameTitle, flex: 2 }}>Name</Text>
               <Text style={styles.tableCellTitle}>Quantity</Text>
-              <Text style={styles.tableCellTitle}>{props.currency}Price</Text>
-              <Text style={styles.tableCellTitle}>{props.currency}Amount</Text>
+              <Text style={styles.tableCellTitle}>Price</Text>
+              <Text style={styles.tableCellTitle}>Amount</Text>
             </View>
             {props.invoiceItems.map((item, index) => (
               <View key={index} style={styles.tableRow}>
                 <Text style={{ ...styles.tableCellName, flex: 2 }}>{item.name}</Text>
-                <Text style={styles.tableCell}><Text style={styles.data}>{item.quantity}</Text></Text>
-                <Text style={styles.tableCell}><Text style={styles.data}>{item.price}</Text></Text>
+                <Text style={styles.tableCell}><Text style={styles.data}>{props.currency}{item.quantity}</Text></Text>
+                <Text style={styles.tableCell}><Text style={styles.data}>{props.currency}{item.price}</Text></Text>
                 <Text style={styles.tableCell}><Text style={styles.data}>{(parseFloat(item.price) * parseFloat(item.quantity)).toFixed(2)}</Text></Text>
               </View>
             ))}

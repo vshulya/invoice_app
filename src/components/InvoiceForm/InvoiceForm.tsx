@@ -11,7 +11,7 @@ interface Props {
 
 const InvoiceApp: React.FC<Props> = (_props) => {
 	const [invoiceLogoPreview, setInvoiceLogoPreview] = useState('');
-	const [invoiceNumber, setInvoiceNumber] = useState<number>(1);
+	const [invoiceNumber, setInvoiceNumber] = useState<string>('1');
 	const [invoiceDate, setInvoiceDate] = useState(new Date());
 	const [invoiceDueDate, setInvoiceDueDate] = useState<Date | null>(null);
 	const [senderName, setSenderName] = useState('');
@@ -234,12 +234,19 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 
 	const handleInvoiceNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const value = e.target.value;
-		if (value !== "" && !isNaN(value as any)) {
-			setInvoiceNumber(parseInt(value, 10));
-		} else {
-			setInvoiceNumber(1);
+		if (!isNaN(value as any)) {
+			setInvoiceNumber(value);
 		}
 	};
+
+	// const handleInvoiceNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+	// 	const value = e.target.value;
+	// 	if (value !== "" && !isNaN(value as any)) {
+	// 		setInvoiceNumber(value);
+	// 	} else {
+	// 		setInvoiceNumber('1');
+	// 	}
+	// };
 
 	const handleInvoiceDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const date = new Date(e.target.value);
@@ -393,7 +400,7 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 	</div>);
 
 	const handleFormReset = () => {
-		setInvoiceNumber(1);
+		setInvoiceNumber('1');
 		setInvoiceDate(new Date());
 		setInvoiceDueDate(new Date());
 		setSenderName('');
@@ -439,7 +446,10 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 								<div className='invoice__info-subsection'>
 									<label>
 										Invoice number:
-										<input type="text" value={invoiceNumber} onChange={handleInvoiceNumberChange} />
+										<input type="text" 
+										value={invoiceNumber} 
+										onChange={handleInvoiceNumberChange} 
+										onBlur={() => { if (isNaN(parseFloat(invoiceNumber))) setInvoiceNumber('1') }}/>
 									</label>
 									<label>
 										Invoice date:
