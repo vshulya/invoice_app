@@ -498,7 +498,7 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 									</label>
 									<label>
 										Price <span>{currency}</span>:
-										<input type="number" step="any" value={item.price} onChange={(e) => handleItemChange(index, 'price', e.target.value)} onKeyDown={handleKeyPress} />
+										<input type="number" step="any" value={item.price} onChange={(e) => handleItemChange(index, 'price', e.target.value)} />
 									</label>
 									<label>
 										Amount <span>{currency}</span>:
