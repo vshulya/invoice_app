@@ -198,9 +198,9 @@ function PDFFile(props: {
             {props.invoiceItems.map((item, index) => (
               <View key={index} style={styles.tableRow}>
                 <Text style={{ ...styles.tableCellName, flex: 2 }}>{item.name}</Text>
-                <Text style={styles.tableCell}><Text style={styles.data}>{props.currency}{item.quantity}</Text></Text>
+                <Text style={styles.tableCell}><Text style={styles.data}>{item.quantity}</Text></Text>
                 <Text style={styles.tableCell}><Text style={styles.data}>{props.currency}{item.price}</Text></Text>
-                <Text style={styles.tableCell}><Text style={styles.data}>{(parseFloat(item.price) * parseFloat(item.quantity)).toFixed(2)}</Text></Text>
+                <Text style={styles.tableCell}><Text style={styles.data}>{props.currency}{(parseFloat(item.price) * parseFloat(item.quantity)).toFixed(2)}</Text></Text>
               </View>
             ))}
 
