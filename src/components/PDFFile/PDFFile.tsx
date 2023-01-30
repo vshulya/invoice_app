@@ -225,12 +225,12 @@ function PDFFile(props: {
               <View style={styles.priceBlock}>
 
                 <View style={styles.price}>
-                  <Text style={styles.line}>Subtotal: </Text> <Text style={styles.data}>{props.currency}{props.subtotal}</Text>
+                  <Text style={styles.line}>Subtotal: </Text> <Text style={styles.data}>{props.currency}{(props.subtotal).toLocaleString()}</Text>
                   {props.discount !== "0" && <><Text style={styles.line}>Discount: </Text><Text style={styles.data}>
                     {props.discountType === "flat" && <>{props.currency}</>}{props.discount}{props.discountType === "percentage" && <>%</>}</Text></>}
                   {props.tax !== "0" && <><Text style={styles.line}>Tax: </Text><Text style={styles.data}>{props.tax}%</Text></>}
                   {props.shipping !== "0" && <><Text style={styles.line}>Shipping: </Text><Text style={styles.data}>{props.currency}{props.shipping}</Text></>}
-                  <Text style={[styles.line, styles.lineTotal]}>Total: </Text> <Text style={[styles.data, styles.lineTotalData]}>{props.currency}{props.total}</Text>
+                  <Text style={[styles.line, styles.lineTotal]}>Total: </Text> <Text style={[styles.data, styles.lineTotalData]}>{props.currency}{(props.total).toLocaleString()}</Text>
                 </View>
 
                 <View style={styles.notes}>

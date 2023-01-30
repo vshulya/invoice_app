@@ -558,12 +558,12 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 								</label>
 							</div>
 							<div>
-								<h4>Subtotal: ${subtotal}</h4>
+								<h4>Subtotal: ${(subtotal).toLocaleString()}</h4>
 								{showDiscount ? discountLabel : showDiscountButton}
 								{showTax ? taxLabel : showTaxButton}
 								{showShipping ? shippingLabel : showShippingButton}
 
-								<h3>Total: ${total}</h3>
+								<h3>Total: ${(total).toLocaleString()}</h3>
 							</div>
 						</section>
 					</article>

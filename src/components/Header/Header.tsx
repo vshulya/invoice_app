@@ -7,7 +7,7 @@ function Header() {
 		<header className="container">
 			<nav>
 				<ul>
-					<li><Link to="/" className="link"><p className="logo">Invoice Generator</p></Link></li>
+					<li><Link to="/"><p className="logo">Invoice Generator</p></Link></li>
 				</ul>
 				<ul className="header__menu">
 					<li><Link to="/about" className="link">

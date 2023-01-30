@@ -112,6 +112,21 @@
 	width: 100%;
 }
 
+.about__inv-img {
+	max-width: 400px;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.about__section {
+	margin-top: 50px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 20px;
+}
+
 @media screen and (max-width: 540px) {
 	.invoice__info-section {
 		flex-direction: column;
@@ -128,5 +143,11 @@
 @media screen and (max-width: 540px) {
 	.price {
 		flex-direction: column-reverse;
+	}
+}
+
+@media screen and (max-width: 540px) {
+	.about__section {
+		flex-direction: column;
 	}
 }
