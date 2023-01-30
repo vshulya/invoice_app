@@ -446,10 +446,10 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 								<div className='invoice__info-subsection'>
 									<label>
 										Invoice number:
-										<input type="text" 
-										value={invoiceNumber} 
-										onChange={handleInvoiceNumberChange} 
-										onBlur={() => { if (isNaN(parseFloat(invoiceNumber))) setInvoiceNumber('1') }}/>
+										<input type="text"
+											value={invoiceNumber}
+											onChange={handleInvoiceNumberChange}
+											onBlur={() => { if (isNaN(parseFloat(invoiceNumber))) setInvoiceNumber('1') }} />
 									</label>
 									<label>
 										Invoice date:
@@ -592,7 +592,8 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 
 							currency={currency}
 
-						/>}>
+						/>}
+					fileName={`Invoice-${invoiceNumber}.pdf`}>
 					{({ loading }) => (loading ? <button>Loading document...</button> : <button onClick={handleSaveLocaleStorage} type="submit">Download invoice</button>)}
 
 				</PDFDownloadLink > : <button disabled>Download invoice</button>}

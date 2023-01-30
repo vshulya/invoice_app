@@ -31,13 +31,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
 
+
   columnHeader: {
     flex: 1,
   },
 
   image: {
     width: '100%',
-    maxWidth: 50,
+    maxWidth: 100,
+    maxHeight: 100,
     resizeMode: 'contain',
   },
 
@@ -105,9 +107,9 @@ const styles = StyleSheet.create({
 
   line: {
     flex: 1,
-    marginTop: 20,
     color: 'grey',
-    // alignSelf: 'flex-start',
+    marginTop: 20,
+    
   },
 
   data: {
@@ -118,12 +120,10 @@ const styles = StyleSheet.create({
 
   lineTotal: {
     color: 'black',
-    // alignSelf: 'flex-start',
   },
 
   lineTotalData: {
     color: 'black',
-    // alignSelf: 'flex-end',
   },
 
   pageNumber: {
@@ -180,11 +180,26 @@ function PDFFile(props: {
             </View>
           </View>
           <View style={styles.block}>
-            <View style={styles.container}>
-              <Text style={styles.line}>From: <Text style={styles.data}>{props.senderName}</Text></Text>
-              <View style={[{width: 10}]}></View>
-              <Text style={styles.line}>To: <Text style={styles.data}>{props.recipientName}</Text></Text>
+            <View style={styles.tableRow}>
+              <Text style={[styles.line, { padding: 5 }]}>From:</Text>
+              <Text style={[styles.line, { padding: 5 }]}>To:</Text>
             </View>
+            <View style={styles.tableRow}>
+              <Text style={styles.tableCell}><Text style={styles.data}>{props.senderName}</Text></Text>
+              <Text style={styles.tableCell}><Text style={styles.data}>{props.recipientName}</Text></Text>
+            </View>
+
+            {/* <View style={[styles.container, { justifyContent: 'space-between' }]}>
+              <View style={[{ display: 'flex', flex: 1, flexDirection: 'column' }]}>
+                <View><Text style={styles.line}>From: </Text></View>
+                <View><Text style={styles.data}>{props.senderName}</Text></View>
+              </View>
+              <View style={[{ width: 10 }]}></View>
+              <View style={[{ display: 'flex', flex: 1, flexDirection: 'column' }]}>
+                <Text style={styles.line}>To: </Text>
+                <Text style={styles.data}>{props.recipientName}</Text>
+              </View>
+            </View> */}
           </View>
 
           <View style={styles.block}>
@@ -211,9 +226,9 @@ function PDFFile(props: {
 
                 <View style={styles.price}>
                   <Text style={styles.line}>Subtotal: </Text> <Text style={styles.data}>{props.currency}{props.subtotal}</Text>
-                  {props.discount !== "0" && <><Text style={styles.line}>Discount: </Text><Text style={styles.data}>{props.discountType === "percentage" && <>%</>}
-{props.discountType === "flat" && <>{props.currency}</>}{props.discount}</Text></>}
-                  {props.tax !== "0" && <><Text style={styles.line}>Tax: </Text><Text style={styles.data}>%{props.tax}</Text></>}
+                  {props.discount !== "0" && <><Text style={styles.line}>Discount: </Text><Text style={styles.data}>
+                    {props.discountType === "flat" && <>{props.currency}</>}{props.discount}{props.discountType === "percentage" && <>%</>}</Text></>}
+                  {props.tax !== "0" && <><Text style={styles.line}>Tax: </Text><Text style={styles.data}>{props.tax}%</Text></>}
                   {props.shipping !== "0" && <><Text style={styles.line}>Shipping: </Text><Text style={styles.data}>{props.currency}{props.shipping}</Text></>}
                   <Text style={[styles.line, styles.lineTotal]}>Total: </Text> <Text style={[styles.data, styles.lineTotalData]}>{props.currency}{props.total}</Text>
                 </View>
@@ -223,10 +238,6 @@ function PDFFile(props: {
               </View>
             </View>
           </View>
-
-
-
-
           <Text
             style={styles.pageNumber}
             render={({ pageNumber, totalPages }) => `${pageNumber} / ${totalPages}`}
