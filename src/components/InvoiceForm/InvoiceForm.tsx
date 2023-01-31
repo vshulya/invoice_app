@@ -343,7 +343,7 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 
 
 	// additional labels 
-	const showDueDateButton = <button type="button" onClick={handleAddDueTo}>Add Due to</button>;
+	const showDueDateButton = <button type="button" onClick={handleAddDueTo}>Add Due Date</button>;
 	const dueDateToLabel = (<label>
 		Due Date:
 		{invoiceDueDate && (
