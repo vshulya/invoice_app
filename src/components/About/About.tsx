@@ -7,7 +7,7 @@ function About() {
 		<main className='container'>
 			<section className="about__section">
 				<div>
-					<h1>Simple and straightforward free invoice generator.</h1>
+					<h1>Simple and straightforward<br />free invoice generator.</h1>
 					<p>No need to log in.</p>
 					<p>Just fill in the form and download your invoice.</p>
 					<p>It's that easy.</p>
