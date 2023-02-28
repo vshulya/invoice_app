@@ -2,14 +2,14 @@ import React, { useState, useEffect } from 'react';
 import PDFFile from '../PDFFile/PDFFile';
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import { ChangeEvent } from 'react';
+import { type } from 'os';
 
 
-interface Props {
+type Props = {
+	currency: string
+};
 
-}
-
-
-const InvoiceApp: React.FC<Props> = (_props) => {
+function InvoiceForm({ currency }: Props) {
 	const [invoiceLogoPreview, setInvoiceLogoPreview] = useState('');
 	const [invoiceNumber, setInvoiceNumber] = useState<string>('1');
 	const [invoiceDate, setInvoiceDate] = useState(new Date());
@@ -26,8 +26,6 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 	const [shipping, setShipping] = useState<string>("0");
 	const [discountType, setDiscountType] = useState<string>("percentage");
 	const [total, setTotal] = useState(0);
-
-	const [currency, setCurrency] = useState('$');
 
 	const [showDueDate, setShowDueDate] = useState(false);
 	const [showDiscount, setShowDiscount] = useState(false);
@@ -69,7 +67,7 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 			localStorage.setItem('invoiceItems', JSON.stringify(invoiceItems));
 			localStorage.setItem('invoiceNote', JSON.stringify(invoiceNote));
 			localStorage.setItem('invoiceNumber', JSON.stringify(invoiceNumber));
-			localStorage.setItem('currency', JSON.stringify(currency));
+			localStorage.setItem('currency', JSON.stringify({currency}));
 			localStorage.setItem('invoiceLogoPreview', JSON.stringify(invoiceLogoPreview));
 
 			if (showDiscount) {
@@ -558,12 +556,12 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 								</label>
 							</div>
 							<div>
-								<h4>Subtotal: ${(subtotal).toLocaleString()}</h4>
+								<h4>Subtotal: {currency}{(subtotal).toLocaleString()}</h4>
 								{showDiscount ? discountLabel : showDiscountButton}
 								{showTax ? taxLabel : showTaxButton}
 								{showShipping ? shippingLabel : showShippingButton}
 
-								<h3>Total: ${(total).toLocaleString()}</h3>
+								<h3>Total: {currency}{(total).toLocaleString()}</h3>
 							</div>
 						</section>
 					</article>
@@ -602,4 +600,4 @@ const InvoiceApp: React.FC<Props> = (_props) => {
 	);
 };
 
-export default InvoiceApp;
+export default InvoiceForm;

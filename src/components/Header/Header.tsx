@@ -1,7 +1,14 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import CurrencyDropdown from "../CurrencyDropdown/CurrencyDropdown";
 
-function Header() {
+type CurrencyDropdownProps = {
+	options: { value: string, label: string,  shortLabel: string}[],
+	setSelectedValue: (value: string) => void,
+	setSelectedLabel: (shortLabel: string) => void
+};
+
+function Header({ options, setSelectedValue, setSelectedLabel }: CurrencyDropdownProps) {
 
 	return (
 		<header className="container">
@@ -13,6 +20,10 @@ function Header() {
 					<li><Link to="/about" className="link">
 						About
 					</Link></li>
+					<CurrencyDropdown 
+					options={options} 
+					setSelectedValue={setSelectedValue}
+					setSelectedLabel={setSelectedLabel} />
 				</ul>
 			</nav>
 		</header>

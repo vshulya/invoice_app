@@ -1,11 +1,17 @@
 import React from "react";
 import InvoiceForm from '../InvoiceForm/InvoiceForm';
 
-function Main() {
+type MainProps = {
+	selectedValue: string,
+	selectedLabel: string
+};
+
+function Main({ selectedValue, selectedLabel }: MainProps) {
 
 	return (
 		<main className="container">
-            <InvoiceForm/>
+			<InvoiceForm
+				currency={selectedLabel} />
 		</main>
 	)
 }
