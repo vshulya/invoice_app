@@ -4,7 +4,7 @@ Simple and straightforward free invoice generator.
 
 ## Domaine
 
-invoice-app-valar.pages.dev
+ https://invoice-app-valar.pages.dev
 
 
 ## Stack
